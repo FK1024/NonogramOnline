@@ -3,3 +3,4 @@
 /node_modules
 /project/target
 /project/project
+.bsp/sbt.json
