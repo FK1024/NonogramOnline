@@ -2,7 +2,16 @@ table, th, td {
   border: 1px solid black;
 }
 
-table {
-  width: 80%;
-  height: 80%;
+th, tr {
+    width: 30px;
+    height: 30px;
+}
+
+.table-button {
+  color: black;
+  background-color: transparent;
+  border-color: transparent;
+  cursor: default;
+  height: 30px;
+  width: 100%
 }
