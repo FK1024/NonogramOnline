@@ -13,7 +13,6 @@ object Main {
   }
 
   def setupUI(): Unit = {
-    createButton("Click me!", true,addClickedMessage)
     createButton("Play Nonogram", true, createGame)
   }
 
@@ -23,16 +22,11 @@ object Main {
     targetNode.appendChild(parNode)
   }
 
-  def addClickedMessage(): Unit = {
-    appendPar(document.body, "You clicked the butt!")
-  }
-
   def createGame(): Unit = {
     removeElementByName("Play Nonogram")
-    removeElementByName("Click me!")
 
     var createplayfield = new createplayfield(5,6)
-    document.body.appendChild(createplayfield.appendPar("1"))
+    document.body.appendChild(createplayfield.appendPar())
   }
 
   def createButton(text: String, event: Boolean, eventfunc: () => Unit): Element = {
