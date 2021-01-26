@@ -10,11 +10,16 @@ object Main {
   def main(args: Array[String]): Unit = {
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
+      parseFile("level1.txt")
     })
   }
 
   def setupUI(): Unit = {
     createButton("Play Nonogram", true, createGame)
+  }
+
+  def parseFile(level: String): Unit = {
+    val reader = new dom.FileReader()
   }
 
   def createGame(): Unit = {
@@ -43,7 +48,6 @@ object Main {
     button.textContent = s
     gameboard(y)(x) = n
     editElementByName("d"+x+"|"+y, n.toString)
-
   }
 
   //--------------------------------------------------------------------------------
