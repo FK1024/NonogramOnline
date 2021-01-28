@@ -7,6 +7,10 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
   val y = cols + tablecols
   val x = rows + tablerows
 
+  var dragx = -1
+  var dragy = -1
+  var drag = false
+
   def initGameBoard(): Array[Array[Int]] = {
     var gameboard:Array[Array[Int]] = Array()
 
@@ -20,7 +24,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return gameboard
   }
 
-  def createPlayTable(currentrows: Array[String], currentcols: Array[String], buttonFunction: (Element, Int, Int) => Unit): Element = {
+  def createPlayTable(currentrows: Array[String], currentcols: Array[String], buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
@@ -45,7 +49,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
             }
           }
         } else {
-          div.appendChild(createTableButton(j,i, buttonFunction))
+          div.appendChild(createTableButton(j-rows+1,i-cols+1, buttonFunction))
         }
         content.appendChild(div)
         tablerow.appendChild(content)
@@ -55,14 +59,29 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return table
   }
 
-  def createTableButton(x: Int, y: Int, buttonFunction: (Element, Int, Int) => Unit): Element = {
+  def createTableButton(Bx: Int, By: Int, buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
     val button = document.createElement("button")
     button.setAttribute("class","table-button")
     button.textContent = " "
-    button.id = x+"|"+y
-    button.addEventListener("click", {e: dom.MouseEvent =>
-      buttonFunction(button, x,y)
+    button.id = Bx+"|"+By
+    button.addEventListener("mousedown", {e: dom.MouseEvent =>
+      dragx = Bx
+      dragy = By
+      drag = true
+      buttonFunction(button, Bx, By, -1, -1, false)
     })
+    button.addEventListener("mouseup", { e: dom.MouseEvent =>
+      buttonFunction(button, Bx, By, dragx, dragy, true)
+      drag = false
+    })
+    button.addEventListener("mouseover", {e: dom.MouseEvent =>
+      if (drag) {
+        dragx = Bx
+        dragy = By
+        buttonFunction(button, Bx, By, dragx, dragy, false)
+      }
+    })
+
     return button
   }
 
@@ -72,9 +91,9 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
-    for(i <- 0 to y-1) {
+    for(i <- 0 to tablecols) {
       var tablerow = document.createElement("tr")
-      for(j <- 0 to x-1) {
+      for(j <- 0 to tablerows) {
         var content = document.createElement("th")
         var div = document.createElement("div")
         div.setAttribute("class", "table-size")

@@ -55,24 +55,31 @@ object Main {
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
-  def buttonFunction(button: Element, x: Int, y: Int): Unit ={
-    var s = " "
+  def buttonFunction(button: Element, x: Int, y: Int, x1: Int, y1: Int, commit: Boolean): Unit ={
     var n = 0
 
-    if (gameboard(y)(x) == 0) {
-      s = "X"
-      n = 1
-    } else if (gameboard(y)(x) == 1) {
-      s = "-"
-      n = 2
-    } else {
-      s = " "
-      n = 0
+    if (!commit) {
+      drawDrag(button,x,y,x1,y1)
+      return
     }
 
-    button.textContent = s
+    if (gameboard(y)(x) == 0) {
+      n = 1
+    } else if (gameboard(y)(x) == 1) {
+      n = 2
+    } else {
+      n = 0
+    }
+    button.setAttribute("class", "table-button-pressed1")
     gameboard(y)(x) = n
     editElementByID("d"+x+"|"+y, n.toString)
+  }
+
+  def drawDrag(button: Element, x: Int, y: Int, x1: Int, y1: Int): Unit = {
+    var diffx = (x - x1).abs
+    var diffy = (y - y1).abs
+
+
   }
 
   //--------------------------------------------------------------------------------

@@ -56,6 +56,17 @@ body {
   cursor: default;
   height: 30px;
   width: 30px;
+  outline: none;
+}
+
+.table-button-pressed1 {
+  background-color: #555555;
+  height: 30px;
+  width: 30px;
+}
+
+.table-button:hover {
+  background-color: #555555;
 }
 
 /*
