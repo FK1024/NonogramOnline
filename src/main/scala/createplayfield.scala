@@ -26,13 +26,16 @@ class createplayfield(x: Int, y: Int) {
       var tablerow = document.createElement("tr")
       for(j <- 0 to x) {
         var content = document.createElement("th")
+        var div = document.createElement("div")
+        div.setAttribute("class", "table-size")
         if(j==0) {
-          content.textContent = i.toString
+          div.textContent = i.toString
         } else if(i==0) {
-          content.textContent = j.toString
+          div.textContent = j.toString
         } else {
-          content.appendChild(createTableButton(j,i, buttonFunction))
+          div.appendChild(createTableButton(j,i, buttonFunction))
         }
+        content.appendChild(div)
         tablerow.appendChild(content)
       }
       table.appendChild(tablerow)
@@ -49,16 +52,19 @@ class createplayfield(x: Int, y: Int) {
       var tablerow = document.createElement("tr")
       for(j <- 0 to x) {
         var content = document.createElement("th")
+        var div = document.createElement("div")
+        div.setAttribute("class", "table-size")
         if(j==0) {
-          content.textContent = i.toString
+          div.textContent = i.toString
         } else if(i==0) {
-          content.textContent = j.toString
+          div.textContent = j.toString
         } else {
           if (j <= x || i <= y-1) {
-            content.textContent = gameboard(y)(x).toString
-            content.id = "d"+j+"|"+i
+            div.textContent = gameboard(y)(x).toString
+            div.id = "d"+j+"|"+i
           }
         }
+        content.appendChild(div)
         tablerow.appendChild(content)
       }
       table.appendChild(tablerow)

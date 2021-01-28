@@ -15,7 +15,19 @@ object Main {
   }
 
   def setupUI(): Unit = {
-    createButton("Play Nonogram", true, createGame)
+    appendElement(document.body,"div", "main-menu", "main-menu")
+    var mainmenu = getElementByID("main-menu")
+    appendElement(mainmenu, "div", "row1","row1" )
+    appendElement(mainmenu, "div", "row2","row2" )
+    var row1 = getElementByID("row1")
+    var row2 = getElementByID("row2")
+
+    createButton("Play Nonogram","menu-button",row1,true, createGame)
+    createButton("Solver","menu-button",row1,true, createGame)
+    createButton("Rules","menu-button",row1,true, createGame)
+    createButton("Options1","menu-button",row2,true, createGame)
+    createButton("Options2","menu-button",row2,true, createGame)
+    createButton("Options3","menu-button",row2,true, createGame)
   }
 
   def parseFile(level: String): Unit = {
@@ -23,7 +35,7 @@ object Main {
   }
 
   def createGame(): Unit = {
-    removeElementByName("Play Nonogram")
+    removeElementByID("main-menu")
     var createplayfield = new createplayfield(5,6)
     gameboard = createplayfield.initGameBoard()
     document.body.appendChild(createplayfield.createPlayTable(buttonFunction))
@@ -47,40 +59,52 @@ object Main {
 
     button.textContent = s
     gameboard(y)(x) = n
-    editElementByName("d"+x+"|"+y, n.toString)
+    editElementByID("d"+x+"|"+y, n.toString)
   }
 
   //--------------------------------------------------------------------------------
   // Helper Functions: TODO auslagern ?
 
-  def createButton(text: String, event: Boolean, eventfunc: () => Unit): Element = {
+  def createButton(text: String, classname: String, targetNode: dom.Node, event: Boolean, eventfunc: () => Unit): Element = {
     val button = document.createElement("button")
     button.textContent = text
     button.id = id.toString
     collection = collection ++ Map(text -> id)
     id += 1
+    button.setAttribute("class",classname)
 
     if (event) {
       button.addEventListener("click", {e: dom.MouseEvent =>
         eventfunc()
       })
     }
-    document.body.appendChild(button)
+    targetNode.appendChild(button)
     return button
   }
 
   def removeElementByName(name: String): Unit = {
     var elementid = collection(name).toString
-    document.body.removeChild(document.getElementById(elementid))
+    var parentnode = document.getElementById(elementid).parentNode
+    parentnode.removeChild(document.getElementById(elementid))
   }
 
-  def editElementByName(name: String, newtext: String): Unit =  {
+  def removeElementByID(id: String): Unit = {
+    var parentnode = document.getElementById(id).parentNode
+    parentnode.removeChild(document.getElementById(id))
+  }
+
+  def editElementByID(name: String, newtext: String): Unit =  {
     document.getElementById(name).textContent = newtext
   }
 
-  def appendPar(targetNode: dom.Node, text: String): Unit = {
-    val parNode = document.createElement("p")
-    parNode.textContent = text
+  def getElementByID(name: String): Element = {
+    return document.getElementById(name)
+  }
+
+  def appendElement(targetNode: dom.Node, element: String, classname: String, id: String): Unit = {
+    val parNode = document.createElement(element)
+    parNode.id = id
+    parNode.setAttribute("class",classname)
     targetNode.appendChild(parNode)
   }
 }

@@ -1,10 +1,52 @@
-table, th, td {
-  border: 1px solid black;
+body {
+  font-family: "Libre Baskerville", serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 30px;
+  background-color: #5CDB95;
 }
 
-th, tr {
-    width: 30px;
-    height: 30px;
+.header{
+    text-transform: uppercase;
+    font-size: 43px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+    color: white;
+    font-family: "Open Sans", sans-serif;
+    text-align: center;
+    height: 150px;
+    margin-top: 50px;
+}
+
+.menu {
+    margin-left: 10%;
+    margin-right: 10%;
+    display: grid;
+    grid-template-rows: 200px;
+}
+
+.row1, .row2 {
+    width: 100%;
+    margin: auto;
+    padding-left: 10%;
+}
+
+/*
+========================
+       BUTTONS
+========================
+*/
+
+.menu-button {
+    color: #FFF;
+    width: 15%;
+    height: 100px;
+    margin-left: 10%;
+    color: white;
+    font-family: "Open Sans", sans-serif;
+    background-color: #05386B;
+    text-align: center;
+    min-width: 150px;
 }
 
 .table-button {
@@ -13,5 +55,27 @@ th, tr {
   border-color: transparent;
   cursor: default;
   height: 30px;
-  width: 100%
+  width: 30px;
+}
+
+/*
+========================
+         Table
+========================
+*/
+
+table {
+  border: 1px solid #05386B;
+  border-style: ridge;
+  border-spacing: 0px;
+}
+
+th {
+  border: 1px solid #05386B;
+  color: white;
+}
+
+.table-size {
+    width: 30px;
+    height: 30px;
 }
