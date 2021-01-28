@@ -68,6 +68,7 @@ table {
   border: 1px solid #05386B;
   border-style: ridge;
   border-spacing: 0px;
+  margin-bottom: 10px;
 }
 
 th {

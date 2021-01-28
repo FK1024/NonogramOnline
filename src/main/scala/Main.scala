@@ -6,6 +6,7 @@ object Main {
   var id = 0
   var collection:Map[String,Int] = Map()
   var gameboard:Array[Array[Int]] = Array()
+  var parser = new parser()
 
   def main(args: Array[String]): Unit = {
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
@@ -31,14 +32,26 @@ object Main {
   }
 
   def parseFile(level: String): Unit = {
-    val reader = new dom.FileReader()
+    parser.currentlevel = parser.level1
   }
 
   def createGame(): Unit = {
     removeElementByID("main-menu")
-    var createplayfield = new createplayfield(5,6)
+
+    var y = parser.getTableColSize() + parser.getColSize()
+    var x = parser.getTableRowSize() + parser.getRowSize()
+
+    var createplayfield = new createplayfield(
+      parser.getTableRowSize(),
+      parser.getTableColSize(),
+      parser.getRowSize(),
+      parser.getColSize(),
+    )
     gameboard = createplayfield.initGameBoard()
-    document.body.appendChild(createplayfield.createPlayTable(buttonFunction))
+    document.body.appendChild(createplayfield.createPlayTable(
+      parser.getRowsOfCurrentLevel(),
+      parser.getColsOfCurrentLevel(),
+      buttonFunction))
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
