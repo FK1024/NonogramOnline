@@ -2,13 +2,21 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
+object Dimension extends Enumeration {
+  type Dimension = Value
+  val Row, Column = Value
+}
+
 object Main {
   var id = 0
   var collection:Map[String,Int] = Map()
   var gameboard:Array[Array[Int]] = Array()
-  var parser = new parser()
+  var parser = new Parser()
 
   def main(args: Array[String]): Unit = {
+    // parsing example
+//    val puzzle = parser.parseFile("resources/levels/5x5/heart.txt")
+
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
       parseFile("level1.txt")
