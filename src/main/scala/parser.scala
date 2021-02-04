@@ -2,6 +2,7 @@ import org.scalajs.dom
 
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
+import scala.util.matching.Regex
 
 class Parser {
   var level1 = "c|2|4|4|4|2|r|1 1|5|5|3|1"
@@ -12,15 +13,15 @@ class Parser {
    * 'r:' indicates, that the following lines of numbers are row segments and
    * 'c:' indicates, that the following lines of numbers are column segments
    *
-   * @param file the file containing the puzzle data
+   * @param puzzleDefinition string containing the puzzle definition
    * @return a tuple containing the row and column segments
    */
-  def parseFile(file: String) = {
+  def parseDefinition(puzzleDefinition: String) = {
     val rowSegments = new ListBuffer[List[Int]]()
     val colSegments = new ListBuffer[List[Int]]()
 
-    val source = Source.fromFile(file)
-    val lines = try source.getLines().toList finally source.close()
+    val trimmed = trimLineBreaks(puzzleDefinition)
+    val lines = trimmed.split("\r\n", 0)
 
     // initialize parse mode with what the first line indicates
     var parseMode = lines.head match {
@@ -51,6 +52,13 @@ class Parser {
 
     new Puzzle(rowSegments.toList, colSegments.toList)
   }
+
+  def trimLineBreaks(text: String) = {
+    "^[\r\n]+|\\.|[\r\n]+$".r.replaceAllIn(text.trim, "")
+  }
+
+
+
 
   private def getColsOrRows(rows: Boolean): Array[String] = {
     var level = currentlevel.split("\\|")

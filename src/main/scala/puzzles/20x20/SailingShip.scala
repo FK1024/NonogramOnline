@@ -1,3 +1,6 @@
+object SailingShip {
+  val puzzle =
+    """
 r:
 2
 3
@@ -40,3 +43,5 @@ c:
 3 1
 1
 1
+    """
+}

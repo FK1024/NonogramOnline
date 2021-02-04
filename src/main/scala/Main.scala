@@ -1,5 +1,5 @@
 import org.scalajs.dom
-import org.scalajs.dom.document
+import org.scalajs.dom.{File, FileReader, document}
 import org.scalajs.dom.raw.Element
 
 object Dimension extends Enumeration {
@@ -15,7 +15,9 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     // parsing example
-//    val puzzle = parser.parseFile("resources/levels/5x5/heart.txt")
+    val puzzle = parser.parseDefinition(Heart.puzzle)
+    println(puzzle.rowSegments)
+    println(puzzle.colSegments)
 
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
