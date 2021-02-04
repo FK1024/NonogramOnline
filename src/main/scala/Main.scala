@@ -1,5 +1,5 @@
 import org.scalajs.dom
-import org.scalajs.dom.{File, FileReader, document}
+import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
 object Dimension extends Enumeration {
@@ -16,8 +16,11 @@ object Main {
   def main(args: Array[String]): Unit = {
     // parsing example
     val puzzle = parser.parseDefinition(Heart.puzzle)
-    println(puzzle.rowSegments)
-    println(puzzle.colSegments)
+
+    // solving example
+    val solver = new Solver
+    val solved = solver.solve(puzzle)
+    println(solved.map(row => row.map(e => if (e == 1) "#" else " ")).map(_.mkString("|")).mkString("\n"))
 
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
