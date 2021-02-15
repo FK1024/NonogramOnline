@@ -12,19 +12,19 @@ object Main {
   var collection:Map[String,Int] = Map()
   var gameboard:Array[Array[Int]] = Array()
   var parser = new Parser()
+  var puzzle:Puzzle = null
 
   def main(args: Array[String]): Unit = {
     // parsing example
-    val puzzle = parser.parseDefinition(Heart.puzzle)
+    puzzle = parser.parseDefinition(Heart.puzzle)
 
     // solving example
     val solver = new Solver
     val solved = solver.solve(puzzle)
-    println(solved.map(row => row.map(e => if (e == 1) "#" else " ")).map(_.mkString("|")).mkString("\n"))
+    //println(solved.map(row => row.map(e => if (e == 1) "#" else " ")).map(_.mkString("|")).mkString("\n"))
 
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
-      parseFile("level1.txt")
     })
   }
 
@@ -44,38 +44,39 @@ object Main {
     createButton("Options3","menu-button",row2,true, createGame)
   }
 
-  def parseFile(level: String): Unit = {
-    parser.currentlevel = parser.level1
-  }
-
   def createGame(): Unit = {
     removeElementByID("main-menu")
 
-    var y = parser.getTableColSize() + parser.getColSize()
-    var x = parser.getTableRowSize() + parser.getRowSize()
+    var y = puzzle.getColSegmentSize() + puzzle.getColSize()
+    var x = puzzle.getRowSegmentSize() + puzzle.getRowSize()
+
+    //println(puzzle.getColSegmentSize()) // 5
+    //println(puzzle.getColSize()) // 1
 
     var createplayfield = new createplayfield(
-      parser.getTableRowSize(),
-      parser.getTableColSize(),
-      parser.getRowSize(),
-      parser.getColSize(),
+      puzzle.getRowSegmentSize(),
+      puzzle.getColSegmentSize(),
+      puzzle.getRowSize(),
+      puzzle.getColSize(),
     )
     gameboard = createplayfield.initGameBoard()
     document.body.appendChild(createplayfield.createPlayTable(
-      parser.getRowsOfCurrentLevel(),
-      parser.getColsOfCurrentLevel(),
+      puzzle.rowSegments,
+      puzzle.colSegments,
       buttonFunction))
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
-  def buttonFunction(button: Element, x: Int, y: Int, x1: Int, y1: Int, commit: Boolean): Unit ={
+  def buttonFunction(button: Element, x: Int, y: Int, x1: Int, y1: Int, drag: Boolean): Unit ={
     var n = 0
 
-    if (!commit) {
-      drawDrag(button,x,y,x1,y1)
+    if (drag) {
+      drawDrag(x,y,x1,y1)
+      restoreGameBoard()
       return
     }
 
+    
     if (gameboard(y)(x) == 0) {
       n = 1
     } else if (gameboard(y)(x) == 1) {
@@ -88,16 +89,49 @@ object Main {
     editElementByID("d"+x+"|"+y, n.toString)
   }
 
-  def drawDrag(button: Element, x: Int, y: Int, x1: Int, y1: Int): Unit = {
-    var diffx = (x - x1).abs
-    var diffy = (y - y1).abs
+  def restoreGameBoard(): Unit = {
+    for(y <- 0 to gameboard.length) {
+      for(x <- 0 to gameboard.length) {
+        if(gameboard(y)(x)==0) getElementByID(x+"|"+y).setAttribute("class", "table-button")
+        else if(gameboard(y)(x)==1) getElementByID(x+"|"+y).setAttribute("class", "table-button-pressed1")
+      }
+    }
+  }
 
+  def drawDrag(Bx: Int, By: Int, x1: Int, y1: Int): Unit = {
+    val diffx = (Bx - x1).abs
+    val diffy = (By - y1).abs
+    var a = 0
+    var b = 0
 
+    if(diffx >= diffy) {
+      b = Bx; a = x1
+      if (Bx < x1) {
+        a = Bx
+        b = x1
+      }
+      for(x <- a to b) {
+        getElementByID(x+"|"+y1).setAttribute("class", "table-button-pressed1")
+        gameboard(y1)(x) = -1
+        editElementByID("d"+x+"|"+y1, "-1")
+      }
+    } else {
+      b = By; a = y1
+      if (By < y1) {
+        a = By
+        b = y1
+      }
+      for(y <- By to y1) {
+        getElementByID(x1+"|"+y).setAttribute("class", "table-button-pressed1")
+        gameboard(y)(x1) = -1
+        editElementByID("d"+x1+"|"+y, "-1")
+      }
+    }
+    println("drag")
   }
 
   //--------------------------------------------------------------------------------
   // Helper Functions: TODO auslagern ?
-
   def createButton(text: String, classname: String, targetNode: dom.Node, event: Boolean, eventfunc: () => Unit): Element = {
     val button = document.createElement("button")
     button.textContent = text

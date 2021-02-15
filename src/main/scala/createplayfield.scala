@@ -24,7 +24,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return gameboard
   }
 
-  def createPlayTable(currentrows: Array[String], currentcols: Array[String], buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
+  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
@@ -36,16 +36,16 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
         div.setAttribute("class", "table-size")
         if(j < rows) {
           if(i >= cols) {
-            var s = currentrows(i-cols).split(" ")
-            if(s.length >= rows-j) {
-              div.textContent = s(s.length-rows+j)
+            var r = currentrows(i-cols)
+            if (r.length >= rows-j) {
+              div.textContent = r(r.length-rows+j).toString
             }
           }
         } else if(i < cols) {
           if(j >= rows) {
-            var s = currentcols(j-rows).split(" ")
-            if (s.length >= cols-i) {
-              div.textContent = s(s.length-cols+i)
+            var r = currentcols(j-rows)
+            if (r.length >= cols-i) {
+              div.textContent = r(r.length-cols+i).toString
             }
           }
         } else {
@@ -71,14 +71,12 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
       buttonFunction(button, Bx, By, -1, -1, false)
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
-      buttonFunction(button, Bx, By, dragx, dragy, true)
+      buttonFunction(button, Bx, By, dragx, dragy, false)
       drag = false
     })
     button.addEventListener("mouseover", {e: dom.MouseEvent =>
       if (drag) {
-        dragx = Bx
-        dragy = By
-        buttonFunction(button, Bx, By, dragx, dragy, false)
+        buttonFunction(button, Bx, By, dragx, dragy, true)
       }
     })
 
