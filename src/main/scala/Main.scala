@@ -36,17 +36,17 @@ object Main {
     appendElement(document.body,"div", "menu", "main-menu")
     var mainmenuElement = getElementByID("main-menu")
 
-    createButton("Play Nonogram","menu-button",mainmenuElement,true, toPlaySettings)
-    createButton("Solver","menu-button",mainmenuElement,true, toSolverSettings)
-    createButton("Rules","menu-button",mainmenuElement,true, createGame)
+    createButton("Play Nonogram","menu-button",mainmenuElement,true, () => toPlaySettings())
+    createButton("Solver","menu-button",mainmenuElement,true, () => toSolverSettings())
+    createButton("Rules","menu-button",mainmenuElement,true, () => createGame())
   }
 
-  def toSolverSettings() = {
+  def toSolverSettings(): Unit = {
     removeElementByID("main-menu")
     createSettingsMenu(false)
   }
 
-  def toPlaySettings() = {
+  def toPlaySettings(): Unit = {
     removeElementByID("main-menu")
     createSettingsMenu(true)
   }
@@ -77,8 +77,8 @@ object Main {
 
     appendElement(playfieldElement, "div", "menu","menu")
     var row1 = getElementByID("menu")
-    createButton("Back","menu-button",row1,true, ()=>backToMenu("playfield", setupUI))
-    createButton("Check","menu-button",row1,true, checkSolution)
+    createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => setupUI()))
+    createButton("Check","menu-button",row1,true, () => checkSolution())
   }
 
   def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
