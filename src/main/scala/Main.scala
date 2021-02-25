@@ -36,12 +36,22 @@ object Main {
     var row1 = getElementByID("row1")
     var row2 = getElementByID("row2")
 
-    createButton("Play Nonogram","menu-button",row1,true, createGame)
-    createButton("Solver","menu-button",row1,true, createGame)
+    createButton("Play Nonogram","menu-button",row1,true, toPlaySettings)
+    createButton("Solver","menu-button",row1,true, toSolverSettings)
     createButton("Rules","menu-button",row1,true, createGame)
     createButton("Options1","menu-button",row2,true, createGame)
     createButton("Options2","menu-button",row2,true, createGame)
     createButton("Options3","menu-button",row2,true, createGame)
+  }
+
+  def toSolverSettings() = {
+    removeElementByID("main-menu")
+    createSettingsMenu(false)
+  }
+
+  def toPlaySettings() = {
+    removeElementByID("main-menu")
+    createSettingsMenu(true)
   }
 
   def createGame(): Unit = {
@@ -67,7 +77,7 @@ object Main {
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
-  // TODO: refactor this function !!! 
+  // TODO: refactor this function !!!
   def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, mode: String): Unit ={
     if(mode == "right") {
       if(drag) {
@@ -156,6 +166,103 @@ object Main {
     }
     targetNode.appendChild(button)
     return button
+  }
+
+  def createSettingsMenu(addGameModeOptions: Boolean) = {
+    var selectedMode = !addGameModeOptions
+    var selectedSize = false
+
+    // Game mode selection
+    val modeCaptionDiv = document.createElement("div")
+    val modeDDBtn = document.createElement("button")
+
+    if (addGameModeOptions) {
+      modeCaptionDiv.setAttribute("class", "dropdown-caption")
+      modeCaptionDiv.textContent = "Game Mode:"
+      document.body.appendChild(modeCaptionDiv)
+
+      val modeDDDiv = document.createElement("div")
+      modeDDDiv.id = "myModeDropdown"
+      modeDDDiv.setAttribute("class", "dropdown")
+      document.body.appendChild(modeDDDiv)
+
+      modeDDBtn.setAttribute("class", "dropdown-button")
+      modeDDBtn.textContent = "Select Mode ..."
+      modeDDDiv.appendChild(modeDDBtn)
+
+      val modeContentDiv = document.createElement("div")
+      modeContentDiv.setAttribute("class", "dropdown-content")
+      modeDDDiv.appendChild(modeContentDiv)
+
+      val fiveLivesBtn = document.createElement("button")
+      fiveLivesBtn.setAttribute("class", "dropdown-element-button")
+      fiveLivesBtn.textContent = "5 Lives Mode"
+      fiveLivesBtn.addEventListener("click", {e: dom.MouseEvent => {
+        modeDDBtn.textContent = fiveLivesBtn.textContent
+        selectedMode = true
+      }})
+      modeContentDiv.appendChild(fiveLivesBtn)
+
+      val hardcoreModeBtn = document.createElement("button")
+      hardcoreModeBtn.setAttribute("class", "dropdown-element-button")
+      hardcoreModeBtn.textContent = "Hardcore Mode"
+      hardcoreModeBtn.addEventListener("click", {e: dom.MouseEvent => {
+        modeDDBtn.textContent = hardcoreModeBtn.textContent
+        selectedMode = true
+      }})
+      modeContentDiv.appendChild(hardcoreModeBtn)
+    }
+
+    // Size selection
+    val sizeCaptionDiv = document.createElement("div")
+    sizeCaptionDiv.setAttribute("class", "dropdown-caption")
+    sizeCaptionDiv.textContent = "Game Field Size:"
+    document.body.appendChild(sizeCaptionDiv)
+
+    val sizeDDDiv = document.createElement("div")
+    sizeDDDiv.id = "mySizeDropdown"
+    sizeDDDiv.setAttribute("class", "dropdown")
+    document.body.appendChild(sizeDDDiv)
+
+    val sizeDDBtn = document.createElement("button")
+    sizeDDBtn.setAttribute("class", "dropdown-button")
+    sizeDDBtn.textContent = "Select Size ..."
+    sizeDDDiv.appendChild(sizeDDBtn)
+
+    val sizeContentDiv = document.createElement("div")
+    sizeContentDiv.setAttribute("class", "dropdown-content")
+    sizeDDDiv.appendChild(sizeContentDiv)
+
+    for (s <- 5 to 25 by 5) {
+      val sizeBtn = document.createElement("button")
+      sizeBtn.setAttribute("class", "dropdown-element-button")
+      sizeBtn.textContent = s"$s x $s"
+      sizeBtn.addEventListener("click", {e: dom.MouseEvent => {
+        sizeDDBtn.textContent = sizeBtn.textContent
+        selectedSize = true
+      }})
+      sizeContentDiv.appendChild(sizeBtn)
+    }
+
+    val submitBtn = document.createElement("button")
+    submitBtn.id = "mySubmitBtn"
+    submitBtn.setAttribute("class", "menu-button")
+    submitBtn.textContent = if (addGameModeOptions) "Create Game" else "Input Numbers"
+    submitBtn.addEventListener("click", {e: dom.MouseEvent => {
+      println("TUT")
+      if (selectedMode && selectedSize) {
+        if (addGameModeOptions) {
+          modeCaptionDiv.textContent += s" ${modeDDBtn.textContent}"
+          removeElementByID("myModeDropdown")
+          sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
+          removeElementByID("mySizeDropdown")
+          removeElementByID("mySubmitBtn")
+          createGame()
+        }
+        // ToDo: createSolverInput
+      }
+    }})
+    document.body.appendChild(submitBtn)
   }
 
   def removeElementByName(name: String): Unit = {
