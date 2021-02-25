@@ -311,8 +311,10 @@ object Main {
   }
 
   def removeElementByID(id: String): Unit = {
-    var parentnode = document.getElementById(id).parentNode
-    parentnode.removeChild(document.getElementById(id))
+    var myNode = document.getElementById(id)
+    if (myNode != null) {
+      myNode.parentNode.removeChild(document.getElementById(id))
+    }
   }
 
   def editElementByID(name: String, newtext: String): Unit =  {
