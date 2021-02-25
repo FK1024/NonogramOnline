@@ -24,7 +24,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return gameboard
   }
 
-  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, String) => Unit): Element = {
+  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, Boolean, String) => Unit): Element = {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
@@ -39,6 +39,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
             var r = currentrows(i-cols)
             if (r.length >= rows-j) {
               div.textContent = r(r.length-rows+j).toString
+              div.id = "c"+(j+1)+"|"+(i-cols+1)
             }
           }
         } else if(i < cols) {
@@ -46,6 +47,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
             var r = currentcols(j-rows)
             if (r.length >= cols-i) {
               div.textContent = r(r.length-cols+i).toString
+              div.id = "r"+(j-rows+1)+"|"+(i+1)
             }
           }
         } else {
@@ -59,7 +61,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return table
   }
 
-  def createTableButton(Bx: Int, By: Int, buttonFunction: (Int, Int, Int, Int, Boolean, String) => Unit): Element = {
+  def createTableButton(Bx: Int, By: Int, buttonFunction: (Int, Int, Int, Int, Boolean, Boolean, String) => Unit): Element = {
     val button = document.createElement("button")
     button.setAttribute("class","table-button")
     button.textContent = " "
@@ -70,17 +72,19 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
       drag = true
       if(e.button == 0) mode = "right"
       if(e.button == 2) mode = "left"
-      buttonFunction(Bx, By, dragx, dragy, drag, mode)
+      buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
       drag = false
       if(e.button == 0) mode = "right"
       if(e.button == 2) mode = "left"
-      buttonFunction(Bx, By, dragx, dragy, drag, mode)
+      buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
     })
     button.addEventListener("mouseover", {e: dom.MouseEvent =>
       if (drag) {
-        buttonFunction(Bx, By, dragx, dragy, drag, mode)
+        buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
+      } else {
+        buttonFunction(Bx, By, dragx, dragy, drag, true, mode)
       }
     })
     button.addEventListener("contextmenu", {e: dom.MouseEvent =>
