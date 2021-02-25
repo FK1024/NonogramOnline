@@ -10,6 +10,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
   var dragx = -1
   var dragy = -1
   var drag = false
+  var mode = "right"
 
   def initGameBoard(): Array[Array[Int]] = {
     var gameboard:Array[Array[Int]] = Array()
@@ -23,7 +24,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return gameboard
   }
 
-  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, dom.MouseEvent) => Unit): Element = {
+  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, String) => Unit): Element = {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
@@ -58,7 +59,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return table
   }
 
-  def createTableButton(Bx: Int, By: Int, buttonFunction: (Int, Int, Int, Int, Boolean, dom.MouseEvent) => Unit): Element = {
+  def createTableButton(Bx: Int, By: Int, buttonFunction: (Int, Int, Int, Int, Boolean, String) => Unit): Element = {
     val button = document.createElement("button")
     button.setAttribute("class","table-button")
     button.textContent = " "
@@ -67,18 +68,24 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
       dragx = Bx
       dragy = By
       drag = true
-      buttonFunction(Bx, By, dragx, dragy, true, e)
+      if(e.button == 0) mode = "right"
+      if(e.button == 2) mode = "left"
+      buttonFunction(Bx, By, dragx, dragy, drag, mode)
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
-      buttonFunction(Bx, By, dragx, dragy, false, e)
       drag = false
+      if(e.button == 0) mode = "right"
+      if(e.button == 2) mode = "left"
+      buttonFunction(Bx, By, dragx, dragy, drag, mode)
     })
     button.addEventListener("mouseover", {e: dom.MouseEvent =>
       if (drag) {
-        buttonFunction(Bx, By, dragx, dragy, true, e)
+        buttonFunction(Bx, By, dragx, dragy, drag, mode)
       }
     })
-
+    button.addEventListener("contextmenu", {e: dom.MouseEvent =>
+      e.preventDefault()
+    })
     return button
   }
 

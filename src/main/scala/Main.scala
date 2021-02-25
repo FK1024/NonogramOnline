@@ -67,23 +67,37 @@ object Main {
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
-  def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, e: dom.MouseEvent): Unit ={
-
-    if (drag) {
-      replaceInGameBoard(-1,0,"table-button")
-      println(e.button)
-      if (e.button == 0) drawDrag(x,y,x1,y1,"table-button-pressed1")
-      else if (e.button == 2) drawDrag(x,y,x1,y1,"table-button-pressed2")
-      return
+  // TODO: refactor this function !!! 
+  def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, mode: String): Unit ={
+    if(mode == "right") {
+      if(drag) {
+        replaceInGameBoard(-3,0,"table-button")
+        replaceInGameBoard(-2,2,"table-button-pressed2")
+        replaceInGameBoard(-1,1,"table-button-pressed1")
+        drawDrag(x,y,x1,y1,"table-button-pressed1")
+      } else {
+        replaceInGameBoard(-3, 1, "table-button-pressed1")
+        replaceInGameBoard(-2, 1, "table-button-pressed1")
+        replaceInGameBoard(-1, 1, "table-button-pressed1")
+      }
+    } else if(mode == "left") {
+      if(drag) {
+        replaceInGameBoard(-3,0,"table-button")
+        replaceInGameBoard(-2,2,"table-button-pressed2")
+        replaceInGameBoard(-1,1,"table-button-pressed1")
+        drawDrag(x,y,x1,y1,"table-button-pressed2")
+      } else {
+        replaceInGameBoard(-3, 2, "table-button-pressed2")
+        replaceInGameBoard(-2, 2, "table-button-pressed2")
+        replaceInGameBoard(-1, 2, "table-button-pressed2")
+      }
     }
-    if (e.button == 0) replaceInGameBoard(-1, 1, "table-button-pressed1")
-    else if (e.button == 2) replaceInGameBoard(-1, 2, "table-button-pressed2")
   }
 
   def replaceInGameBoard(toreplace: Int, replacewith: Int, buttonvalue: String): Unit = {
     for(y <- 1 until gameboard.length) {
       for(x <- 1 until gameboard.length) {
-        if(gameboard(y)(x)== toreplace) {
+        if(gameboard(y)(x) == toreplace) {
           gameboard(y)(x) = replacewith
           getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
           editElementByID("d"+x+"|"+y, replacewith.toString)
@@ -106,8 +120,9 @@ object Main {
       }
       for(x <- a to b) {
         getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
-        gameboard(y1)(x) = -1
-        editElementByID("d"+x+"|"+y1, "-1")
+        if (gameboard(y1)(x) == 0) gameboard(y1)(x) = -3
+        else gameboard(y1)(x) = -Math.abs(gameboard(y1)(x))
+        editElementByID("d"+x+"|"+y1, gameboard(y1)(x).toString)
       }
     } else {
       b = By; a = y1
@@ -117,8 +132,9 @@ object Main {
       }
       for(y <- a to b) {
         getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
-        gameboard(y)(x1) = -1
-        editElementByID("d"+x1+"|"+y, "-1")
+        if (gameboard(y)(x1) == 0) gameboard(y)(x1) = -3
+        else gameboard(y)(x1) = -Math.abs(gameboard(y)(x1))
+        editElementByID("d"+x1+"|"+y, gameboard(y)(x1).toString)
       }
     }
   }
