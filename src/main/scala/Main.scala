@@ -13,15 +13,19 @@ object Main {
   var gameboard:Array[Array[Int]] = Array()
   var parser = new Parser()
   var puzzle:Puzzle = null
+  var playfield:CreatePlayField = null
+  var solver:Solver = null
+
+  var last_x = -1
+  var last_y = -1
 
   def main(args: Array[String]): Unit = {
     // parsing example
     puzzle = parser.parseDefinition(Heart.puzzle)
 
     // solving example
-    val solver = new Solver
-    val solved = solver.solve(puzzle)
-    //println(solved.map(row => row.map(e => if (e == 1) "#" else " ")).map(_.mkString("|")).mkString("\n"))
+    solver = new Solver
+    solver.solve(puzzle)
 
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
@@ -29,19 +33,12 @@ object Main {
   }
 
   def setupUI(): Unit = {
-    appendElement(document.body,"div", "main-menu", "main-menu")
-    var mainmenu = getElementByID("main-menu")
-    appendElement(mainmenu, "div", "row1","row1" )
-    appendElement(mainmenu, "div", "row2","row2" )
-    var row1 = getElementByID("row1")
-    var row2 = getElementByID("row2")
+    appendElement(document.body,"div", "menu", "main-menu")
+    var mainmenuElement = getElementByID("main-menu")
 
-    createButton("Play Nonogram","menu-button",row1,true, toPlaySettings)
-    createButton("Solver","menu-button",row1,true, toSolverSettings)
-    createButton("Rules","menu-button",row1,true, createGame)
-    createButton("Options1","menu-button",row2,true, createGame)
-    createButton("Options2","menu-button",row2,true, createGame)
-    createButton("Options3","menu-button",row2,true, createGame)
+    createButton("Play Nonogram","menu-button",mainmenuElement,true, toPlaySettings)
+    createButton("Solver","menu-button",mainmenuElement,true, toSolverSettings)
+    createButton("Rules","menu-button",mainmenuElement,true, createGame)
   }
 
   def toSolverSettings() = {
@@ -56,6 +53,8 @@ object Main {
 
   def createGame(): Unit = {
     removeElementByID("main-menu")
+    appendElement(document.body,"div", "playfield", "playfield")
+    var playfieldElement = getElementByID("playfield")
 
     var y = puzzle.getColSegmentSize() + puzzle.getColSize()
     var x = puzzle.getRowSegmentSize() + puzzle.getRowSize()
@@ -63,22 +62,62 @@ object Main {
     //println(puzzle.getColSegmentSize()) // 5
     //println(puzzle.getColSize()) // 1
 
-    var createplayfield = new createplayfield(
+    playfield = new CreatePlayField(
       puzzle.getRowSegmentSize(),
       puzzle.getColSegmentSize(),
       puzzle.getRowSize(),
       puzzle.getColSize(),
     )
-    gameboard = createplayfield.initGameBoard()
-    document.body.appendChild(createplayfield.createPlayTable(
+    gameboard = playfield.initGameBoard()
+    playfieldElement.appendChild(playfield.createPlayTable(
       puzzle.rowSegments,
       puzzle.colSegments,
       buttonFunction))
-    document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
+    playfieldElement.appendChild(playfield.createDebugGameBoard(gameboard))
+
+    appendElement(playfieldElement, "div", "menu","menu")
+    var row1 = getElementByID("menu")
+    createButton("Back","menu-button",row1,true, ()=>backToMenu("playfield", setupUI))
+    createButton("Check","menu-button",row1,true, checkSolution)
+  }
+
+  def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
+    removeElementByID(toremove)
+    eventfunc()
+  }
+
+  def checkSolution(): Unit = {
+    if(solver.submitSolution(gameboard)) {
+      println("Nice!!")
+    } else {
+      println("Try again!")
+    }
+  }
+
+  def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, hover: Boolean, mode: String): Unit = {
+    if (hover) {
+      if(last_y >= 0) buttonHover(last_x, last_y, "table-size")
+      buttonHover(x,y, "table-size-hover")
+      last_x = x
+      last_y = y
+    }
+    else buttonGameBoard(x, y, x1, y1, drag, mode)
+  }
+
+  def buttonHover(x: Int, y: Int, style: String): Unit = {
+    var size_x = puzzle.rowSegments(y-1).length
+    var size_y = puzzle.colSegments(x-1).length
+
+    for(y1 <- puzzle.getColSize() until puzzle.getColSize()-size_y by -1) {
+      getElementByID("r"+x+"|"+y1).setAttribute("class", style)
+    }
+    for(x1 <- puzzle.getRowSize() until puzzle.getRowSize()-size_x by -1) {
+      getElementByID("c"+x1+"|"+y).setAttribute("class", style)
+    }
   }
 
   // TODO: refactor this function !!!
-  def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, mode: String): Unit ={
+  def buttonGameBoard(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, mode: String): Unit = {
     if(mode == "right") {
       if(drag) {
         replaceInGameBoard(-3,0,"table-button")

@@ -3,7 +3,7 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 30px;
-  background-color: #5CDB95;
+  background-color: grey;
 }
 
 .header{
@@ -19,16 +19,12 @@ body {
 }
 
 .menu {
-    margin-left: 10%;
-    margin-right: 10%;
-    display: grid;
-    grid-template-rows: 200px;
-}
-
-.row1, .row2 {
-    width: 100%;
     margin: auto;
-    padding-left: 10%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    gap: 30px;
+    grid-auto-flow: column;
 }
 
 /*
@@ -39,9 +35,7 @@ body {
 
 .menu-button {
     color: #FFF;
-    width: 15%;
     height: 100px;
-    margin-left: 10%;
     color: white;
     font-family: "Open Sans", sans-serif;
     background-color: #05386B;
@@ -114,8 +108,10 @@ body {
   width: 30px;
 }
 
-.table-button:hover {
-  background-color: #555555;
+.table-button:hover, .table-button-pressed1:hover, .table-button-pressed2:hover {
+  background-color: #222222;
+  height: 30px;
+  width: 30px;
 }
 
 /*
@@ -129,6 +125,8 @@ table {
   border-style: ridge;
   border-spacing: 0px;
   margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 th {
@@ -139,4 +137,10 @@ th {
 .table-size {
     width: 30px;
     height: 30px;
+}
+
+.table-size-hover {
+    width: 30px;
+    height: 30px;
+    background-color: red;
 }
