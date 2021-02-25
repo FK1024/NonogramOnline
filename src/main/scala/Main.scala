@@ -13,7 +13,8 @@ object Main {
   var gameboard:Array[Array[Int]] = Array()
   var parser = new Parser()
   var puzzle:Puzzle = null
-  var playfield:createplayfield = null
+  var playfield:CreatePlayField = null
+  var solver:Solver = null
 
   var last_x = -1
   var last_y = -1
@@ -23,8 +24,8 @@ object Main {
     puzzle = parser.parseDefinition(Heart.puzzle)
 
     // solving example
-    val solver = new Solver
-    val solved = solver.solve(puzzle)
+    solver = new Solver
+    solver.solve(puzzle)
 
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       setupUI()
@@ -32,23 +33,18 @@ object Main {
   }
 
   def setupUI(): Unit = {
-    appendElement(document.body,"div", "main-menu", "main-menu")
-    var mainmenu = getElementByID("main-menu")
-    appendElement(mainmenu, "div", "row1","row1" )
-    appendElement(mainmenu, "div", "row2","row2" )
-    var row1 = getElementByID("row1")
-    var row2 = getElementByID("row2")
+    appendElement(document.body,"div", "menu", "main-menu")
+    var mainmenuElement = getElementByID("main-menu")
 
-    createButton("Play Nonogram","menu-button",row1,true, createGame)
-    createButton("Solver","menu-button",row1,true, createGame)
-    createButton("Rules","menu-button",row1,true, createGame)
-    createButton("Options1","menu-button",row2,true, createGame)
-    createButton("Options2","menu-button",row2,true, createGame)
-    createButton("Options3","menu-button",row2,true, createGame)
+    createButton("Play Nonogram","menu-button",mainmenuElement,true, createGame)
+    createButton("Solver","menu-button",mainmenuElement,true, createGame)
+    createButton("Rules","menu-button",mainmenuElement,true, createGame)
   }
 
   def createGame(): Unit = {
     removeElementByID("main-menu")
+    appendElement(document.body,"div", "playfield", "playfield")
+    var playfieldElement = getElementByID("playfield")
 
     var y = puzzle.getColSegmentSize() + puzzle.getColSize()
     var x = puzzle.getRowSegmentSize() + puzzle.getRowSize()
@@ -56,18 +52,36 @@ object Main {
     //println(puzzle.getColSegmentSize()) // 5
     //println(puzzle.getColSize()) // 1
 
-    playfield = new createplayfield(
+    playfield = new CreatePlayField(
       puzzle.getRowSegmentSize(),
       puzzle.getColSegmentSize(),
       puzzle.getRowSize(),
       puzzle.getColSize(),
     )
     gameboard = playfield.initGameBoard()
-    document.body.appendChild(playfield.createPlayTable(
+    playfieldElement.appendChild(playfield.createPlayTable(
       puzzle.rowSegments,
       puzzle.colSegments,
       buttonFunction))
-    document.body.appendChild(playfield.createDebugGameBoard(gameboard))
+    playfieldElement.appendChild(playfield.createDebugGameBoard(gameboard))
+
+    appendElement(playfieldElement, "div", "menu","menu")
+    var row1 = getElementByID("menu")
+    createButton("Back","menu-button",row1,true, ()=>backToMenu("playfield", setupUI))
+    createButton("Check","menu-button",row1,true, checkSolution)
+  }
+
+  def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
+    removeElementByID(toremove)
+    eventfunc()
+  }
+
+  def checkSolution(): Unit = {
+    if(solver.submitSolution(gameboard)) {
+      println("Nice!!")
+    } else {
+      println("Try again!")
+    }
   }
 
   def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, hover: Boolean, mode: String): Unit = {
@@ -88,7 +102,6 @@ object Main {
       getElementByID("r"+x+"|"+y1).setAttribute("class", style)
     }
     for(x1 <- puzzle.getRowSize() until puzzle.getRowSize()-size_x by -1) {
-      println(x1)
       getElementByID("c"+x1+"|"+y).setAttribute("class", style)
     }
   }

@@ -19,16 +19,12 @@ body {
 }
 
 .menu {
-    margin-left: 10%;
-    margin-right: 10%;
-    display: grid;
-    grid-template-rows: 200px;
-}
-
-.row1, .row2 {
-    width: 100%;
     margin: auto;
-    padding-left: 10%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    gap: 30px;
+    grid-auto-flow: column;
 }
 
 /*
@@ -39,9 +35,7 @@ body {
 
 .menu-button {
     color: #FFF;
-    width: 15%;
     height: 100px;
-    margin-left: 10%;
     color: white;
     font-family: "Open Sans", sans-serif;
     background-color: #05386B;
@@ -88,6 +82,8 @@ table {
   border-style: ridge;
   border-spacing: 0px;
   margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 th {

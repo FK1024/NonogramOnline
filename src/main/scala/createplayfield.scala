@@ -2,7 +2,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
-class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
+class CreatePlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
 
   val y = cols + tablecols
   val x = rows + tablerows
@@ -83,9 +83,8 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     button.addEventListener("mouseover", {e: dom.MouseEvent =>
       if (drag) {
         buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
-      } else {
-        buttonFunction(Bx, By, dragx, dragy, drag, true, mode)
       }
+      buttonFunction(Bx, By, dragx, dragy, drag, true, mode)
     })
     button.addEventListener("contextmenu", {e: dom.MouseEvent =>
       e.preventDefault()
