@@ -13,10 +13,9 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
 
   def initGameBoard(): Array[Array[Int]] = {
     var gameboard:Array[Array[Int]] = Array()
-
-    for(i <- 0 to y) {
+    for(i <- 0 to tablecols) {
       var h:Array[Int] = Array()
-      for(j <- 0 to x) {
+      for(j <- 0 to tablerows) {
         h = h :+ 0
       }
       gameboard = gameboard :+ h
@@ -24,7 +23,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return gameboard
   }
 
-  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
+  def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, dom.MouseEvent) => Unit): Element = {
     var table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
@@ -59,7 +58,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     return table
   }
 
-  def createTableButton(Bx: Int, By: Int, buttonFunction: (Element, Int, Int, Int, Int, Boolean) => Unit): Element = {
+  def createTableButton(Bx: Int, By: Int, buttonFunction: (Int, Int, Int, Int, Boolean, dom.MouseEvent) => Unit): Element = {
     val button = document.createElement("button")
     button.setAttribute("class","table-button")
     button.textContent = " "
@@ -68,15 +67,15 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
       dragx = Bx
       dragy = By
       drag = true
-      buttonFunction(button, Bx, By, -1, -1, false)
+      buttonFunction(Bx, By, dragx, dragy, false, e)
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
-      buttonFunction(button, Bx, By, dragx, dragy, false)
+      buttonFunction(Bx, By, dragx, dragy, false, e)
       drag = false
     })
     button.addEventListener("mouseover", {e: dom.MouseEvent =>
       if (drag) {
-        buttonFunction(button, Bx, By, dragx, dragy, true)
+        buttonFunction(Bx, By, dragx, dragy, true, e)
       }
     })
 
@@ -100,10 +99,8 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
         } else if(i==0) {
           div.textContent = j.toString
         } else {
-          if (j <= x || i <= y-1) {
-            div.textContent = gameboard(y)(x).toString
-            div.id = "d"+j+"|"+i
-          }
+          div.textContent = gameboard(i)(j).toString
+          div.id = "d"+j+"|"+i
         }
         content.appendChild(div)
         tablerow.appendChild(content)

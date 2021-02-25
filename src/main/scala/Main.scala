@@ -67,38 +67,32 @@ object Main {
     document.body.appendChild(createplayfield.createDebugGameBoard(gameboard))
   }
 
-  def buttonFunction(button: Element, x: Int, y: Int, x1: Int, y1: Int, drag: Boolean): Unit ={
-    var n = 0
+  def buttonFunction(x: Int, y: Int, x1: Int, y1: Int, drag: Boolean, e: dom.MouseEvent): Unit ={
 
     if (drag) {
-      drawDrag(x,y,x1,y1)
-      restoreGameBoard()
+      replaceInGameBoard(-1,0,"table-button")
+      println(e.button)
+      if (e.button == 0) drawDrag(x,y,x1,y1,"table-button-pressed1")
+      else if (e.button == 2) drawDrag(x,y,x1,y1,"table-button-pressed2")
       return
     }
-
-    
-    if (gameboard(y)(x) == 0) {
-      n = 1
-    } else if (gameboard(y)(x) == 1) {
-      n = 2
-    } else {
-      n = 0
-    }
-    button.setAttribute("class", "table-button-pressed1")
-    gameboard(y)(x) = n
-    editElementByID("d"+x+"|"+y, n.toString)
+    if (e.button == 0) replaceInGameBoard(-1, 1, "table-button-pressed1")
+    else if (e.button == 2) replaceInGameBoard(-1, 2, "table-button-pressed2")
   }
 
-  def restoreGameBoard(): Unit = {
-    for(y <- 0 to gameboard.length) {
-      for(x <- 0 to gameboard.length) {
-        if(gameboard(y)(x)==0) getElementByID(x+"|"+y).setAttribute("class", "table-button")
-        else if(gameboard(y)(x)==1) getElementByID(x+"|"+y).setAttribute("class", "table-button-pressed1")
+  def replaceInGameBoard(toreplace: Int, replacewith: Int, buttonvalue: String): Unit = {
+    for(y <- 1 until gameboard.length) {
+      for(x <- 1 until gameboard.length) {
+        if(gameboard(y)(x)== toreplace) {
+          gameboard(y)(x) = replacewith
+          getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
+          editElementByID("d"+x+"|"+y, replacewith.toString)
+        }
       }
     }
   }
 
-  def drawDrag(Bx: Int, By: Int, x1: Int, y1: Int): Unit = {
+  def drawDrag(Bx: Int, By: Int, x1: Int, y1: Int, buttonclass: String): Unit = {
     val diffx = (Bx - x1).abs
     val diffy = (By - y1).abs
     var a = 0
@@ -111,7 +105,7 @@ object Main {
         b = x1
       }
       for(x <- a to b) {
-        getElementByID(x+"|"+y1).setAttribute("class", "table-button-pressed1")
+        getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
         gameboard(y1)(x) = -1
         editElementByID("d"+x+"|"+y1, "-1")
       }
@@ -121,13 +115,12 @@ object Main {
         a = By
         b = y1
       }
-      for(y <- By to y1) {
-        getElementByID(x1+"|"+y).setAttribute("class", "table-button-pressed1")
+      for(y <- a to b) {
+        getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
         gameboard(y)(x1) = -1
         editElementByID("d"+x1+"|"+y, "-1")
       }
     }
-    println("drag")
   }
 
   //--------------------------------------------------------------------------------

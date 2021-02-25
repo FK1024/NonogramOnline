@@ -65,6 +65,12 @@ body {
   width: 30px;
 }
 
+.table-button-pressed2 {
+  background-color: #d6d6d6;
+  height: 30px;
+  width: 30px;
+}
+
 .table-button:hover {
   background-color: #555555;
 }
