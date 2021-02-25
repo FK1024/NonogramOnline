@@ -67,7 +67,7 @@ class createplayfield(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
       dragx = Bx
       dragy = By
       drag = true
-      buttonFunction(Bx, By, dragx, dragy, false, e)
+      buttonFunction(Bx, By, dragx, dragy, true, e)
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
       buttonFunction(Bx, By, dragx, dragy, false, e)
