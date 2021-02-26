@@ -68,11 +68,15 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       buttons.puzzle.rowSegments,
       buttons.puzzle.colSegments,
       buttons.buttonFunction))
-    playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
+    //playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
+    val spacer = document.createElement("div")
+    spacer.setAttribute("class", "spacer50")
+    spacer.id = "spacer1"
+    playfieldElement.appendChild(spacer)
 
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
-    buttons.createButton("Back","menu-button",row1,true, () => backToMainMenu(() => createMainMenu()))
+    buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
     buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true,-1,-1))
   }
 
@@ -202,8 +206,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   def winloose(s: String): Unit = {
     var playfieldElement = helper.getElementByID("playfield")
 
-    helper.appendElement(playfieldElement, "div", "menu","message")
-    var row1 = helper.getElementByID("message")
+    var row1 = helper.getElementByID("spacer1")
     row1.textContent = s
 
     helper.removeElementByID("menu")

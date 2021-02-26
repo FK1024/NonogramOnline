@@ -87,7 +87,7 @@ class Buttons(helper: Helper) {
         if(gameboard(y)(x) == toreplace) {
           gameboard(y)(x) = replacewith
           helper.getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
-          helper.editElementByID("d"+x+"|"+y, replacewith.toString)
+          //helper.editElementByID("d"+x+"|"+y, replacewith.toString)
         }
       }
     }
@@ -109,7 +109,7 @@ class Buttons(helper: Helper) {
         helper.getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
         if (gameboard(y1)(x) == 0) gameboard(y1)(x) = -3
         else gameboard(y1)(x) = -Math.abs(gameboard(y1)(x))
-        helper.editElementByID("d"+x+"|"+y1, gameboard(y1)(x).toString)
+        //helper.editElementByID("d"+x+"|"+y1, gameboard(y1)(x).toString)
       }
     } else {
       b = By; a = y1
@@ -121,7 +121,7 @@ class Buttons(helper: Helper) {
         helper.getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
         if (gameboard(y)(x1) == 0) gameboard(y)(x1) = -3
         else gameboard(y)(x1) = -Math.abs(gameboard(y)(x1))
-        helper.editElementByID("d"+x1+"|"+y, gameboard(y)(x1).toString)
+        //helper.editElementByID("d"+x1+"|"+y, gameboard(y)(x1).toString)
       }
     }
   }
