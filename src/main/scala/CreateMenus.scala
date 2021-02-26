@@ -18,9 +18,14 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     createSettingsMenu(true)
   }
 
-  def backToMenu(eventfunc: () => Unit): Unit = {
+  def backToMainMenu(eventfunc: () => Unit): Unit = {
     helper.removeElementByID("mySettingsMenu")
     helper.removeElementByID("playfield")
+    eventfunc()
+  }
+
+  def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
+    helper.removeElementByID(toremove)
     eventfunc()
   }
 
@@ -64,7 +69,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
-    buttons.createButton("Back","menu-button",row1,true, () => backToMenu( () => createMainMenu()))
+    buttons.createButton("Back","menu-button",row1,true, () => backToMainMenu(() => createMainMenu()))
     buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution())
   }
 
@@ -154,7 +159,8 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       sizeContentDiv.appendChild(sizeBtn)
     }
 
-    val backBtn = buttons.createButton("Back", "menu-button", settingsMenu, true, () => backToMenu(() => createMainMenu()))
+    val backBtn = buttons.createButton("Back", "menu-button", settingsMenu, true, () => backToMainMenu(() => createMainMenu()))
+    backBtn.id = "myBackButton"
 
     val submitBtn = document.createElement("button")
     submitBtn.id = "mySubmitBtn"
