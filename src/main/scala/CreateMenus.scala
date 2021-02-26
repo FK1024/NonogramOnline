@@ -82,6 +82,17 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     settingsMenu.id = "mySettingsMenu"
     document.body.appendChild(settingsMenu)
 
+    val selectionDiv = document.createElement("div")
+    val buttonDiv = document.createElement("div")
+    val spacer = document.createElement("div")
+
+    selectionDiv.setAttribute("class", "menu")
+    buttonDiv.setAttribute("class", "menu")
+    spacer.setAttribute("class", "spacer")
+    settingsMenu.appendChild(selectionDiv)
+    settingsMenu.appendChild(spacer)
+    settingsMenu.appendChild(buttonDiv)
+
     // Game mode selection
     val modeCaptionDiv = document.createElement("div")
     val modeDDDiv = document.createElement("div")
@@ -89,7 +100,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     if (addGameModeOptions) {
       val modeSelectionDiv = document.createElement("div")
-      settingsMenu.appendChild(modeSelectionDiv)
+      selectionDiv.appendChild(modeSelectionDiv)
 
       modeCaptionDiv.setAttribute("class", "dropdown-caption")
       modeCaptionDiv.textContent = "Game Mode:"
@@ -128,7 +139,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     // Size selection
     val sizeSelectionDiv = document.createElement("div")
-    settingsMenu.appendChild(sizeSelectionDiv)
+    selectionDiv.appendChild(sizeSelectionDiv)
 
     val sizeCaptionDiv = document.createElement("div")
     sizeCaptionDiv.setAttribute("class", "dropdown-caption")
@@ -160,7 +171,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       sizeContentDiv.appendChild(sizeBtn)
     }
 
-    val backBtn = buttons.createButton("Back", "menu-button", settingsMenu, true, () => backToMainMenu(() => createMainMenu()))
+    val backBtn = buttons.createButton("Back", "menu-button", buttonDiv, true, () => backToMainMenu(() => createMainMenu()))
     backBtn.id = "myBackButton"
 
     val submitBtn = document.createElement("button")
@@ -182,7 +193,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       }
     }})
 
-    settingsMenu.appendChild(submitBtn)
+    buttonDiv.appendChild(submitBtn)
   }
 
   def winloose(s: String): Unit = {
