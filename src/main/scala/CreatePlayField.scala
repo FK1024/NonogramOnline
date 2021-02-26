@@ -67,12 +67,19 @@ class CreatePlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
     button.textContent = " "
     button.id = Bx+"|"+By
     button.addEventListener("mousedown", {e: dom.MouseEvent =>
-      dragx = Bx
-      dragy = By
-      drag = true
-      if(e.button == 0) mode = "right"
-      if(e.button == 2) mode = "left"
-      buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
+      if (drag) {
+        drag = false
+        if(e.button == 0) mode = "right"
+        if(e.button == 2) mode = "left"
+        buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
+      } else {
+        dragx = Bx
+        dragy = By
+        drag = true
+        if(e.button == 0) mode = "right"
+        if(e.button == 2) mode = "left"
+        buttonFunction(Bx, By, dragx, dragy, drag, false, mode)
+      }
     })
     button.addEventListener("mouseup", { e: dom.MouseEvent =>
       drag = false
