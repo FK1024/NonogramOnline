@@ -14,6 +14,16 @@ class Solver() {
     fieldSize = puzzle.rowSegments.length
     gameField = Array.ofDim[Int](fieldSize, fieldSize)
 
+    // check for overfilled rows/cols
+    for (i <- 0 until fieldSize) {
+      if (getLaxity(puzzle.rowSegments(i)) < 0) {
+        throw new Exception(s"the segments of row $i are too long to fit in the game field")
+      }
+      if (getLaxity(puzzle.colSegments(i)) < 0) {
+        throw new Exception(s"the segments of column $i are too long to fit in the game field")
+      }
+    }
+
     var openRows = new ListBuffer[Int]
     var openCols = new ListBuffer[Int]
     var openSet = new ListBuffer[Int]
@@ -96,7 +106,7 @@ class Solver() {
     }
   }
 
-  private def getLaxity(numbers: List[Int]): Int = fieldSize - (numbers.sum + numbers.length - 1)
+  def getLaxity(numbers: List[Int]): Int = fieldSize - (numbers.sum + numbers.length - 1)
 
   private def rowSolved(row: Int): Boolean = {
     for (col <- 0 until fieldSize) {
