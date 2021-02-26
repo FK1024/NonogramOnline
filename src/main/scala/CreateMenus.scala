@@ -49,6 +49,8 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     buttons.createParser(size)
     buttons.setGameMode(mode)
     helper.removeElementByID("main-menu")
+    buttons.lives = 5
+    helper.getElementByID("spacer").setAttribute("class", "spacer50")
     helper.appendElement(document.body,"div", "playfield", "playfield")
     var playfieldElement = helper.getElementByID("playfield")
 
@@ -66,12 +68,16 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       buttons.puzzle.rowSegments,
       buttons.puzzle.colSegments,
       buttons.buttonFunction))
-    playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
+    //playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
+    val spacer = document.createElement("div")
+    spacer.setAttribute("class", "spacer50")
+    spacer.id = "spacer1"
+    playfieldElement.appendChild(spacer)
 
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
-    buttons.createButton("Back","menu-button",row1,true, () => backToMainMenu(() => createMainMenu()))
-    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution())
+    buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
+    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true,-1,-1))
   }
 
   def createSettingsMenu(addGameModeOptions: Boolean) = {
@@ -88,7 +94,8 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     selectionDiv.setAttribute("class", "menu")
     buttonDiv.setAttribute("class", "menu")
-    spacer.setAttribute("class", "spacer")
+    spacer.setAttribute("class", "spacer300")
+    spacer.id = "spacer"
     settingsMenu.appendChild(selectionDiv)
     settingsMenu.appendChild(spacer)
     settingsMenu.appendChild(buttonDiv)
@@ -199,8 +206,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   def winloose(s: String): Unit = {
     var playfieldElement = helper.getElementByID("playfield")
 
-    helper.appendElement(playfieldElement, "div", "menu","message")
-    var row1 = helper.getElementByID("message")
+    var row1 = helper.getElementByID("spacer1")
     row1.textContent = s
 
     helper.removeElementByID("menu")
@@ -209,8 +215,6 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     buttons.createButton("Back to Main Menu","menu-button",row2,true, () => backToMenu("playfield", () => createMainMenu()))
     buttons.createButton("Play Again","menu-button",row2,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
-
-    buttons.lives = 5
   }
 
   def looseMenu(): Unit = {

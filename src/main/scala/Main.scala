@@ -19,6 +19,10 @@ object Main {
     var menu = new CreateMenus(helper, buttons)
     buttons.menureference = menu
 
+    document.addEventListener("contextmenu", {e: dom.MouseEvent =>
+      e.preventDefault()
+    })
+
     document.addEventListener("DOMContentLoaded", { (e: dom.Event) =>
       menu.createMainMenu()
     })
