@@ -35,20 +35,18 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     buttons.createButton("Play Nonogram","menu-button",mainmenuElement,true, () => toPlaySettings())
     buttons.createButton("Solver","menu-button",mainmenuElement,true, () => toSolverSettings())
-    buttons.createButton("Rules","menu-button",mainmenuElement,true, () => createGame(_,_))
+    //buttons.createButton("Rules","menu-button",mainmenuElement,true, () => createGame(_,_))
   }
 
   def createGame(size: String, mode: String): Unit = {
     buttons.createParser(size)
+    buttons.setGameMode(mode)
     helper.removeElementByID("main-menu")
     helper.appendElement(document.body,"div", "playfield", "playfield")
     var playfieldElement = helper.getElementByID("playfield")
 
     var y = buttons.puzzle.getColSegmentSize() + buttons.puzzle.getColSize()
     var x = buttons.puzzle.getRowSegmentSize() + buttons.puzzle.getRowSize()
-
-    //println(puzzle.getColSegmentSize()) // 5
-    //println(puzzle.getColSize()) // 1
 
     buttons.playfield = new CreatePlayField(
       buttons.puzzle.getRowSegmentSize(),
@@ -163,6 +161,28 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
         // ToDo: createSolverInput
       }
     }})
+
     document.body.appendChild(submitBtn)
+  }
+
+  def winloose(s: String): Unit = {
+    helper.removeElementByID("playfield")
+    helper.appendElement(document.body, "div", "LooseOrWinMenu", "LooseOrWinMenu")
+    var maindiv = helper.getElementByID("LooseOrWinMenu")
+    maindiv.textContent = s
+
+    helper.appendElement(maindiv, "div", "LooseOrWinMenuButtons", "LooseOrWinMenuButtons")
+    var LooseOrWinMenuButtons = helper.getElementByID("LooseOrWinMenuButtons")
+
+    buttons.createButton("Back to Main Menu","menu-button",LooseOrWinMenuButtons,true, () => backToMenu("LooseOrWinMenu", () => createMainMenu()))
+    buttons.createButton("Play Again","menu-button",LooseOrWinMenuButtons,true, () => backToMenu("LooseOrWinMenu", () => createSettingsMenu(true)))
+  }
+
+  def looseMenu(): Unit = {
+    winloose("You Lost :( ")
+  }
+
+  def winMenu(): Unit = {
+   winloose("You Won!")
   }
 }

@@ -2,23 +2,24 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
+
 class Buttons(helper: Helper) {
-  var id = 0
   var puzzle:Puzzle = null
   var solver:Solver = null
-  var parser = new Parser()
-
+  var menureference:CreateMenus = null
   var playfield:CreatePlayField = null
-  var gameboard:Array[Array[Int]] = Array()
 
+  var gamemode = Gamemode.Default
+  var gameboard:Array[Array[Int]] = Array()
   var last_x = -1
   var last_y = -1
+  var lives = 5
+
+  var parser = new Parser()
 
   def createButton(text: String, classname: String, targetNode: dom.Node, event: Boolean, eventfunc: () => Unit): Element = {
     val button = document.createElement("button")
     button.textContent = text
-    button.id = id.toString
-    id += 1
     button.setAttribute("class",classname)
 
     if (event) {
@@ -63,6 +64,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 1, "table-button-pressed1")
         replaceInGameBoard(-2, 1, "table-button-pressed1")
         replaceInGameBoard(-1, 1, "table-button-pressed1")
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution()
       }
     } else if(mode == "left") {
       if(drag) {
@@ -74,6 +76,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 2, "table-button-pressed2")
         replaceInGameBoard(-2, 2, "table-button-pressed2")
         replaceInGameBoard(-1, 2, "table-button-pressed2")
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution()
       }
     }
   }
@@ -137,10 +140,22 @@ class Buttons(helper: Helper) {
   }
 
   def checkSolution(): Unit = {
-    if(solver.submitSolution(gameboard)) {
-      println("Nice!!")
-    } else {
-      println("Try again!")
+    var check = solver.submitSolution(gameboard)
+
+    if (gamemode == Gamemode.FiveLife) {
+      if (!check) lives -= 1
+      if (lives <= 0) menureference.looseMenu()
+    }
+
+    if(check) menureference.winMenu()
+    else if (gamemode != Gamemode.FiveLife) menureference.looseMenu()
+  }
+
+  def setGameMode(mode: String): Unit  =  {
+    mode match {
+      case "5 Lives Mode" => gamemode = Gamemode.FiveLife
+      case "Hardcore Mode" => gamemode = Gamemode.Hardcore
+      case _ => gamemode = Gamemode.Default
     }
   }
 }

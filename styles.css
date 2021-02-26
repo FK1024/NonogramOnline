@@ -132,6 +132,7 @@ table {
 th {
   border: 1px solid #05386B;
   color: white;
+  user-select: none;
 }
 
 .table-size {

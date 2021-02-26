@@ -222,11 +222,8 @@ class Solver() {
   def submitSolution(submission: Array[Array[Int]]): Boolean = {
     for(y <- gameField.indices) {
       for(x <- gameField.indices) {
-        if(gameField(y)(x) == 1 && submission(y+1)(x+1) != 1) {
-          println(gameField(y)(x))
-          println(submission(y+1)(x+1))
-          return false
-        }
+        if(gameField(y)(x) == 1 && submission(y+1)(x+1) != 1) return false
+        if (gameField(y)(x) == 0 && submission(y+1)(x+1) == 1) return false
       }
     }
     true
