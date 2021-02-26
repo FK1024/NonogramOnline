@@ -222,10 +222,15 @@ class Solver() {
   def submitSolution(submission: Array[Array[Int]]): Boolean = {
     for(y <- gameField.indices) {
       for(x <- gameField.indices) {
-        if(gameField(y)(x) == 1 && submission(y+1)(x+1) != 1) return false
-        if (gameField(y)(x) == 0 && submission(y+1)(x+1) == 1) return false
+        if(gameField(y)(x) == Set && submission(y+1)(x+1) != Set) return false
+        if(gameField(y)(x) == Blank && submission(y+1)(x+1) == Set) return false
       }
     }
+    true
+  }
+
+  def checkPosition(submission: Array[Array[Int]], y: Int, x: Int): Boolean = {
+    if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) return false
     true
   }
 }

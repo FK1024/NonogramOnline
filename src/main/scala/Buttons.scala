@@ -64,7 +64,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 1, "table-button-pressed1")
         replaceInGameBoard(-2, 1, "table-button-pressed1")
         replaceInGameBoard(-1, 1, "table-button-pressed1")
-        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution()
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false,y,x)
       }
     } else if(mode == "left") {
       if(drag) {
@@ -76,7 +76,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 2, "table-button-pressed2")
         replaceInGameBoard(-2, 2, "table-button-pressed2")
         replaceInGameBoard(-1, 2, "table-button-pressed2")
-        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution()
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false,y,x)
       }
     }
   }
@@ -139,21 +139,31 @@ class Buttons(helper: Helper) {
     solver.solve(puzzle)
   }
 
-  def checkSolution(): Unit = {
-    var check = solver.submitSolution(gameboard)
+  def checkSolution(checkall: Boolean,y: Int, x:Int): Unit = {
+    var completecheck = solver.submitSolution(gameboard)
+    if(completecheck) menureference.winMenu()
 
-    if (gamemode == Gamemode.FiveLife) {
-      if (!check) lives -= 1
-      if (lives <= 0) menureference.looseMenu()
+    if(checkall) {
+      menureference.looseMenu()
+    } else {
+      var check = !solver.checkPosition(gameboard,y-1,x-1)
+      if (check) {
+        if (gamemode == Gamemode.FiveLife) {
+          lives -= 1
+          helper.getElementByID("spacer").textContent = "Lives: " + lives
+          if (lives <= 0) menureference.looseMenu()
+        } else if (gamemode == Gamemode.Hardcore) {
+          menureference.looseMenu()
+        }
+      }
     }
-
-    if(check) menureference.winMenu()
-    else if (gamemode != Gamemode.FiveLife) menureference.looseMenu()
   }
 
   def setGameMode(mode: String): Unit  =  {
     mode match {
-      case "5 Lives Mode" => gamemode = Gamemode.FiveLife
+      case "5 Lives Mode" =>
+        gamemode = Gamemode.FiveLife
+        helper.getElementByID("spacer").textContent = "Lives: " + lives
       case "Hardcore Mode" => gamemode = Gamemode.Hardcore
       case _ => gamemode = Gamemode.Default
     }

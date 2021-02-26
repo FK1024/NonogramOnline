@@ -27,7 +27,14 @@ body {
     grid-auto-flow: column;
 }
 
-.spacer {
+.spacer50 {
+    min-height: 50px;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+    font-size: 18px;
+}
+
+.spacer300 {
     min-height: 300px;
 }
 
