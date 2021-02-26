@@ -18,8 +18,9 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     createSettingsMenu(true)
   }
 
-  def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
-    helper.removeElementByID(toremove)
+  def backToMenu(eventfunc: () => Unit): Unit = {
+    helper.removeElementByID("mySettingsMenu")
+    helper.removeElementByID("playfield")
     eventfunc()
   }
 
@@ -65,7 +66,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
-    buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createMainMenu()))
+    buttons.createButton("Back","menu-button",row1,true, () => backToMenu( () => createMainMenu()))
     buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution())
   }
 
@@ -73,19 +74,26 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     var selectedMode = !addGameModeOptions
     var selectedSize = false
 
+    val settingsMenu = document.createElement("div")
+    settingsMenu.id = "mySettingsMenu"
+    document.body.appendChild(settingsMenu)
+
     // Game mode selection
     val modeCaptionDiv = document.createElement("div")
+    val modeDDDiv = document.createElement("div")
     val modeDDBtn = document.createElement("button")
 
     if (addGameModeOptions) {
+      val modeSelectionDiv = document.createElement("div")
+      settingsMenu.appendChild(modeSelectionDiv)
+
       modeCaptionDiv.setAttribute("class", "dropdown-caption")
       modeCaptionDiv.textContent = "Game Mode:"
-      document.body.appendChild(modeCaptionDiv)
+      modeSelectionDiv.appendChild(modeCaptionDiv)
 
-      val modeDDDiv = document.createElement("div")
       modeDDDiv.id = "myModeDropdown"
       modeDDDiv.setAttribute("class", "dropdown")
-      document.body.appendChild(modeDDDiv)
+      modeSelectionDiv.appendChild(modeDDDiv)
 
       modeDDBtn.setAttribute("class", "dropdown-button")
       modeDDBtn.textContent = "Select Mode ..."
@@ -115,15 +123,18 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     }
 
     // Size selection
+    val sizeSelectionDiv = document.createElement("div")
+    settingsMenu.appendChild(sizeSelectionDiv)
+
     val sizeCaptionDiv = document.createElement("div")
     sizeCaptionDiv.setAttribute("class", "dropdown-caption")
     sizeCaptionDiv.textContent = "Game Field Size:"
-    document.body.appendChild(sizeCaptionDiv)
+    sizeSelectionDiv.appendChild(sizeCaptionDiv)
 
     val sizeDDDiv = document.createElement("div")
     sizeDDDiv.id = "mySizeDropdown"
     sizeDDDiv.setAttribute("class", "dropdown")
-    document.body.appendChild(sizeDDDiv)
+    sizeSelectionDiv.appendChild(sizeDDDiv)
 
     val sizeDDBtn = document.createElement("button")
     sizeDDBtn.setAttribute("class", "dropdown-button")
@@ -145,24 +156,26 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       sizeContentDiv.appendChild(sizeBtn)
     }
 
+    val backBtn = buttons.createButton("Back", "menu-button", settingsMenu, true, () => backToMenu(() => createMainMenu()))
+
     val submitBtn = document.createElement("button")
     submitBtn.id = "mySubmitBtn"
     submitBtn.setAttribute("class", "menu-button")
     submitBtn.textContent = if (addGameModeOptions) "Create Game" else "Input Numbers"
     submitBtn.addEventListener("click", {e: dom.MouseEvent => {
-      println("TUT")
       if (selectedMode && selectedSize) {
         if (addGameModeOptions) {
           modeCaptionDiv.textContent += s" ${modeDDBtn.textContent}"
-          helper.removeElementByID("myModeDropdown")
+          helper.removeElementByID(modeDDDiv.id)
           sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
-          helper.removeElementByID("mySizeDropdown")
-          helper.removeElementByID("mySubmitBtn")
+          helper.removeElementByID(sizeDDDiv.id)
+          helper.removeElementByID(submitBtn.id)
+          helper.removeElementByID(backBtn.id)
           createGame(sizeDDBtn.textContent, modeDDBtn.textContent)
         }
         // ToDo: createSolverInput
       }
     }})
-    document.body.appendChild(submitBtn)
+    settingsMenu.appendChild(submitBtn)
   }
 }
