@@ -11,12 +11,12 @@ class Helper {
     }
   }
 
-  def editElementByID(name: String, newtext: String): Unit =  {
-    document.getElementById(name).textContent = newtext
+  def editElementByID(id: String, newtext: String): Unit =  {
+    document.getElementById(id).textContent = newtext
   }
 
-  def getElementByID(name: String): Element = {
-    return document.getElementById(name)
+  def getElementByID(id: String): Element = {
+    return document.getElementById(id)
   }
 
   def appendElement(targetNode: dom.Node, element: String, classname: String, id: String): Unit = {

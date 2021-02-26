@@ -25,6 +25,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   }
 
   def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
+    helper.removeElementByID("mySettingsMenu")
     helper.removeElementByID(toremove)
     eventfunc()
   }
@@ -185,16 +186,20 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   }
 
   def winloose(s: String): Unit = {
-    helper.removeElementByID("playfield")
-    helper.appendElement(document.body, "div", "LooseOrWinMenu", "LooseOrWinMenu")
-    var maindiv = helper.getElementByID("LooseOrWinMenu")
-    maindiv.textContent = s
+    var playfieldElement = helper.getElementByID("playfield")
 
-    helper.appendElement(maindiv, "div", "LooseOrWinMenuButtons", "LooseOrWinMenuButtons")
-    var LooseOrWinMenuButtons = helper.getElementByID("LooseOrWinMenuButtons")
+    helper.appendElement(playfieldElement, "div", "menu","message")
+    var row1 = helper.getElementByID("message")
+    row1.textContent = s
 
-    buttons.createButton("Back to Main Menu","menu-button",LooseOrWinMenuButtons,true, () => backToMenu("LooseOrWinMenu", () => createMainMenu()))
-    buttons.createButton("Play Again","menu-button",LooseOrWinMenuButtons,true, () => backToMenu("LooseOrWinMenu", () => createSettingsMenu(true)))
+    helper.removeElementByID("menu")
+    helper.appendElement(playfieldElement, "div", "menu","menu")
+    var row2 = helper.getElementByID("menu")
+
+    buttons.createButton("Back to Main Menu","menu-button",row2,true, () => backToMenu("playfield", () => createMainMenu()))
+    buttons.createButton("Play Again","menu-button",row2,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
+
+    buttons.lives = 5
   }
 
   def looseMenu(): Unit = {
