@@ -2,6 +2,8 @@ import org.scalajs.dom
 import org.scalajs.dom.{document, html}
 import org.scalajs.dom.raw.Event
 
+import scala.collection.mutable.ListBuffer
+
 class CreateMenus(helper: Helper, buttons: Buttons) {
 
   /*
@@ -322,6 +324,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
         resultTableCell.setAttribute("class", "th1")
         resultTableRow.appendChild(resultTableCell)
         val resultTableCellDiv = document.createElement("div")
+        resultTableCellDiv.id = s"$r|$c"
         resultTableCellDiv.setAttribute("class", "table-size")
         resultTableCell.appendChild(resultTableCellDiv)
       }
@@ -369,19 +372,28 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     backBtn.id = "myBackButton"
 
     val solveBtn = buttons.createButton("Solve", "menu-button", puzzleInputDiv, true, () => {
-      val rowSegments = List()
-      for (r <- 0 until size) {
-        rowSegments :+ helper.getElementByID(s"row_$r").textContent.split(" ").toList
+      val rowSegments = new ListBuffer[List[Int]]()
+      val colSegments = new ListBuffer[List[Int]]()
+      for (i <- 0 until size) {
+        rowSegments.append(helper.getElementByID(s"row_$i").textContent.split(" ").toList.map(_.toInt))
+        colSegments.append(helper.getElementByID(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
       }
-      val colSegments = List()
-      for (c <- 0 until size) {
-        colSegments :+ helper.getElementByID(s"col_$c").textContent.split("<br>").toList
-      }
-      runSolver(new Puzzle(rowSegments, colSegments))
+      runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
     })
+    solveBtn.id = "mySolveButton"
   }
 
-  def runSolver(puzzle: Puzzle) = {
-    //ToDo: run the solver and display solution
+  def runSolver(puzzle: Puzzle): Unit = {
+    val solution = new Solver().solve(puzzle)
+
+    for (r <- puzzle.rowSegments.indices) {
+      for (c <- puzzle.colSegments.indices) {
+        val cellDiv = helper.getElementByID(s"$r|$c")
+        solution(r)(c) match {
+          case -1 => cellDiv.setAttribute("class", "table-button-pressed2")
+          case 1 => cellDiv.setAttribute("class", "table-button-pressed1")
+        }
+      }
+    }
   }
 }
