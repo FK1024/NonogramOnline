@@ -64,7 +64,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 1, "table-button-pressed1")
         replaceInGameBoard(-2, 1, "table-button-pressed1")
         replaceInGameBoard(-1, 1, "table-button-pressed1")
-        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false,y,x)
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false)
       }
     } else if(mode == "left") {
       if(drag) {
@@ -76,7 +76,7 @@ class Buttons(helper: Helper) {
         replaceInGameBoard(-3, 2, "table-button-pressed2")
         replaceInGameBoard(-2, 2, "table-button-pressed2")
         replaceInGameBoard(-1, 2, "table-button-pressed2")
-        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false,y,x)
+        if(gamemode == Gamemode.Hardcore || gamemode == Gamemode.FiveLife) checkSolution(false)
       }
     }
   }
@@ -139,14 +139,14 @@ class Buttons(helper: Helper) {
     solver.solve(puzzle)
   }
 
-  def checkSolution(checkall: Boolean,y: Int, x:Int): Unit = {
+  def checkSolution(checkall: Boolean): Unit = {
     var completecheck = solver.submitSolution(gameboard)
     if(completecheck) menureference.winMenu()
 
     if(checkall) {
       menureference.looseMenu()
     } else {
-      var check = !solver.checkPosition(gameboard,y-1,x-1)
+      var check = !solver.checkPosition(gameboard)
       if (check) {
         if (gamemode == Gamemode.FiveLife) {
           lives -= 1

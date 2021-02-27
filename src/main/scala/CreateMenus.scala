@@ -78,7 +78,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
     buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
-    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true,-1,-1))
+    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true))
   }
 
   def createSettingsMenu(addGameModeOptions: Boolean) = {
@@ -221,7 +221,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     rulesTextElement = helper.getElementByID("rulestext3")
     rulesTextElement.textContent = helper.rules2()
     helper.appendElement(rulesElement, "br", "", "")
-    
+
     helper.appendElement(rulesElement, "div", "h1", "rulestext4")
     rulesTextElement = helper.getElementByID("rulestext4")
     rulesTextElement.textContent = "Solution techniques"

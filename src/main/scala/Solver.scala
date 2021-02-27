@@ -239,8 +239,12 @@ class Solver() {
     true
   }
 
-  def checkPosition(submission: Array[Array[Int]], y: Int, x: Int): Boolean = {
-    if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) return false
+  def checkPosition(submission: Array[Array[Int]]): Boolean = {
+    for(y <- gameField.indices) {
+      for(x <- gameField.indices) {
+        if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) return false
+      }
+    }
     true
   }
 }
