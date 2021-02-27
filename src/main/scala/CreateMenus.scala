@@ -1,5 +1,6 @@
 import org.scalajs.dom
-import org.scalajs.dom.document
+import org.scalajs.dom.{document, html}
+import org.scalajs.dom.raw.Event
 
 class CreateMenus(helper: Helper, buttons: Buttons) {
 
@@ -21,6 +22,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   def backToMainMenu(eventfunc: () => Unit): Unit = {
     helper.removeElementByID("mySettingsMenu")
     helper.removeElementByID("playfield")
+    helper.removeElementByID("myPuzzleInputGUI")
     eventfunc()
   }
 
@@ -80,7 +82,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true,-1,-1))
   }
 
-  def createSettingsMenu(addGameModeOptions: Boolean) = {
+  def createSettingsMenu(addGameModeOptions: Boolean): Unit = {
     var selectedMode = !addGameModeOptions
     var selectedSize = false
 
@@ -195,8 +197,19 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
           helper.removeElementByID(submitBtn.id)
           helper.removeElementByID(backBtn.id)
           createGame(sizeDDBtn.textContent, modeDDBtn.textContent)
+        } else {
+          helper.removeElementByID(settingsMenu.id)
+
+          val size = sizeDDBtn.textContent match {
+            case "5 x 5" => 5
+            case "10 x 10" => 10
+            case "15 x 15" => 15
+            case "20 x 20" => 20
+            case "25 x 25" => 25
+            case _ => throw new Exception(s"Game field size '${sizeDDBtn.textContent}' is not valid")
+          }
+          createPuzzleInput(size)
         }
-        // ToDo: createSolverInput
       }
     }})
 
@@ -223,5 +236,118 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
   def winMenu(): Unit = {
    winloose("You Won!")
+  }
+
+  def createPuzzleInput(size: Int): Unit = {
+    val puzzleInputDiv = document.createElement("div")
+    puzzleInputDiv.id = "myPuzzleInputGUI"
+    document.body.appendChild(puzzleInputDiv)
+
+    // main table
+    val outerTable = document.createElement("table")
+    puzzleInputDiv.appendChild(outerTable)
+
+    val firstRow = document.createElement("tr")
+    outerTable.appendChild(firstRow)
+
+    val firstCell = document.createElement("th")
+    firstRow.appendChild(firstCell)
+
+    val firstCellDiv = document.createElement("div")
+    firstCell.appendChild(firstCellDiv)
+
+    val secondCell = document.createElement("th")
+    firstRow.appendChild(secondCell)
+
+    val secondCellDiv = document.createElement("div")
+    secondCell.appendChild(secondCellDiv)
+
+    val secondRow = document.createElement("tr")
+    outerTable.appendChild(secondRow)
+
+    val thirdCell = document.createElement("th")
+    secondRow.appendChild(thirdCell)
+
+    val thirdCellDiv = document.createElement("div")
+    thirdCell.appendChild(thirdCellDiv)
+
+    val fourthCell = document.createElement("th")
+    secondRow.appendChild(fourthCell)
+
+    val fourthCellDiv = document.createElement("div")
+//    fourthCellDiv.setAttribute("class", "table-size")
+    fourthCell.appendChild(fourthCellDiv)
+
+    // result table
+    val resultTable = document.createElement("table")
+    resultTable.setAttribute("class","styled-table")
+    for (r <- 0 until size) {
+      val resultTableRow = document.createElement("tr")
+      resultTable.appendChild(resultTableRow)
+      for (c <- 0 until size) {
+        val resultTableCell = document.createElement("th")
+        resultTableRow.appendChild(resultTableCell)
+        val resultTableCellDiv = document.createElement("div")
+        resultTableCellDiv.setAttribute("class", "table-size")
+        resultTableCell.appendChild(resultTableCellDiv)
+      }
+    }
+    fourthCellDiv.appendChild(resultTable)
+
+    // column segments input table
+    val colSegsTable = document.createElement("table")
+    colSegsTable.setAttribute("class","styled-table")
+    val colSegsTableRow = document.createElement("tr")
+    colSegsTable.appendChild(colSegsTableRow)
+    for (c <- 0 until size) {
+      val colSegsTableCell = document.createElement("th")
+      colSegsTableCell.setAttribute("class", "column-segments")
+      colSegsTableRow.appendChild(colSegsTableCell)
+      val colSegsTableCellDiv = document.createElement("div")
+      colSegsTableCellDiv.id = s"col_$c"
+      colSegsTableCellDiv.setAttribute("class", "column-segments-input")
+      colSegsTableCellDiv.setAttribute("contenteditable", "true")
+      colSegsTableCell.appendChild(colSegsTableCellDiv)
+    }
+    secondCellDiv.appendChild(colSegsTable)
+
+    // row segments input table
+    val rowSegsTable = document.createElement("table")
+    rowSegsTable.setAttribute("class", "styled-table")
+    for (r <- 0 until size) {
+      val rowSegsTableRow = document.createElement("tr")
+      rowSegsTable.appendChild(rowSegsTableRow)
+      val rowSegsTableCell = document.createElement("th")
+      rowSegsTableCell.setAttribute("class", "row-segments")
+      rowSegsTableRow.appendChild(rowSegsTableCell)
+      val rowSegsTableCellDiv = document.createElement("div")
+      rowSegsTableCellDiv.id = s"row_$r"
+      rowSegsTableCellDiv.setAttribute("class", "row-segments-input")
+      rowSegsTableCellDiv.setAttribute("contenteditable", "true")
+      rowSegsTableCell.appendChild(rowSegsTableCellDiv)
+      rowSegsTableCellDiv.addEventListener("keydown", {e: dom.KeyboardEvent =>
+        if (e.keyCode == 13) e.preventDefault()
+      })
+    }
+    thirdCellDiv.appendChild(rowSegsTable)
+
+    val backBtn = buttons.createButton("Back", "menu-button", puzzleInputDiv, true, () => backToMainMenu(() => createMainMenu()))
+    backBtn.id = "myBackButton"
+
+    val solveBtn = buttons.createButton("Solve", "menu-button", puzzleInputDiv, true, () => {
+      val rowSegments = List()
+      for (r <- 0 until size) {
+        rowSegments :+ helper.getElementByID(s"row_$r").textContent.split(" ").toList
+      }
+      val colSegments = List()
+      for (c <- 0 until size) {
+        colSegments :+ helper.getElementByID(s"col_$c").textContent.split("<br>").toList
+      }
+      runSolver(new Puzzle(rowSegments, colSegments))
+    })
+  }
+
+  def runSolver(puzzle: Puzzle) = {
+    //ToDo: run the solver and display solution
   }
 }
