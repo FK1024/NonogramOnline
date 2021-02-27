@@ -1,11 +1,7 @@
 import Dimension.{Column, Dimension, Row}
 import scala.collection.mutable.ListBuffer
 
-class Solver() {
-  private val Unknown = 0
-  private val Blank = -1
-  private val Set = 1
-
+object Solver {
   private var fieldSize = 0
   private var gameField: Array[Array[Int]] = Array[Array[Int]]()
   private var wrongField: Array[Array[Int]] = Array[Array[Int]]()
@@ -36,7 +32,7 @@ class Solver() {
     for (i <- 0 until fieldSize) {
       if (puzzle.rowSegments(i).length == 1 && puzzle.rowSegments(i).head == 0) {
         for (j <- 0 until fieldSize) {
-          gameField(i)(j) = Blank
+          gameField(i)(j) = State.Blank
         }
       } else {
         openRows.append(i)
@@ -44,7 +40,7 @@ class Solver() {
 
       if (puzzle.colSegments(i).length == 1 && puzzle.colSegments(i).head == 0) {
         for (j <- 0 until fieldSize) {
-          gameField(j)(i) = Blank
+          gameField(j)(i) = State.Blank
         }
       } else {
         openCols.append(i)
@@ -68,7 +64,7 @@ class Solver() {
           }
           val transposed = validConfigs.transpose // TransposeConfig(validConfigs)
           for (i <- transposed.indices) {
-            if (dim == Dimension.Row && gameField(index)(i) == Unknown || dim == Dimension.Column && gameField(i)(index) == Unknown) {
+            if (dim == Dimension.Row && gameField(index)(i) == State.Unknown || dim == Dimension.Column && gameField(i)(index) == State.Unknown) {
               val cellStates = transposed(i)
               // all valid configurations for this previously unknown cell have the same state => can be set in gameField
               if (cellStates.forall(_ == cellStates.head)) {
@@ -112,7 +108,7 @@ class Solver() {
 
   private def rowSolved(row: Int): Boolean = {
     for (col <- 0 until fieldSize) {
-      if (gameField(row)(col) == Unknown) {
+      if (gameField(row)(col) == State.Unknown) {
         return false
       }
     }
@@ -121,7 +117,7 @@ class Solver() {
 
   private def colSolved(col: Int): Boolean = {
     for (row <- 0 until fieldSize) {
-      if (gameField(row)(col) == Unknown) {
+      if (gameField(row)(col) == State.Unknown) {
         return false
       }
     }
@@ -196,17 +192,17 @@ class Solver() {
       }
 
       for (blank <- start until segmentStarts(s)) {
-        setup(blank) = Blank
+        setup(blank) = State.Blank
       }
 
       for (set <- segmentStarts(s) until segmentStarts(s) + segments(s)) {
-        setup(set) = Set
+        setup(set) = State.Set
       }
     }
 
     // fill up blanks after last segment
     for (blank <- segmentStarts.last + segments.last until fieldSize) {
-      setup(blank) = Blank
+      setup(blank) = State.Blank
     }
 
     setup
@@ -216,14 +212,14 @@ class Solver() {
     dimension match {
       case Dimension.Row =>
         for (c <- 0 until fieldSize) {
-          if (!(gameField(index)(c) == fieldSetup(c) || gameField(index)(c) == Unknown)) {
+          if (!(gameField(index)(c) == fieldSetup(c) || gameField(index)(c) == State.Unknown)) {
             return false
           }
         }
         true
       case Dimension.Column =>
         for (r <- 0 until fieldSize) {
-          if (!(gameField(r)(index) == fieldSetup(r) || gameField(r)(index) == Unknown)) {
+          if (!(gameField(r)(index) == fieldSetup(r) || gameField(r)(index) == State.Unknown)) {
             return false
           }
         }
@@ -234,8 +230,8 @@ class Solver() {
   def submitSolution(submission: Array[Array[Int]]): Boolean = {
     for(y <- gameField.indices) {
       for(x <- gameField.indices) {
-        if(gameField(y)(x) == Set && submission(y+1)(x+1) != Set) return false
-        if(gameField(y)(x) == Blank && submission(y+1)(x+1) == Set) return false
+        if(gameField(y)(x) == State.Set && submission(y+1)(x+1) != State.Set) return false
+        if(gameField(y)(x) == State.Blank && submission(y+1)(x+1) == State.Set) return false
       }
     }
     true
@@ -253,7 +249,7 @@ class Solver() {
 
     for(y <- gameField.indices) {
       for(x <- gameField.indices) {
-        if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) {
+        if(submission(y+1)(x+1) == State.Set && gameField(y)(x) != State.Set) {
           check = false
           wrongField(y)(x) = 1
           count += 1

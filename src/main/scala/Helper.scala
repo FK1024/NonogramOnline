@@ -2,7 +2,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
-class Helper {
+object Helper {
 
   def removeElementByID(id: String): Unit = {
     var myNode = document.getElementById(id)

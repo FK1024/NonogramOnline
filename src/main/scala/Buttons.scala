@@ -3,11 +3,9 @@ import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
 
-class Buttons(helper: Helper) {
+object Buttons {
   var puzzle:Puzzle = null
-  var solver:Solver = null
-  var menureference:CreateMenus = null
-  var playfield:CreatePlayField = null
+  var playfield:PlayField = null
 
   var gamemode = Gamemode.Default
   var gameboard:Array[Array[Int]] = Array()
@@ -15,8 +13,6 @@ class Buttons(helper: Helper) {
   var last_y = -1
   var lives = 5
   var gameend = false
-
-  var parser = new Parser()
 
   def createButton(text: String, classname: String, targetNode: dom.Node, event: Boolean, eventfunc: () => Unit): Element = {
     val button = document.createElement("button")
@@ -37,10 +33,10 @@ class Buttons(helper: Helper) {
     var size_y = puzzle.colSegments(x-1).length
 
     for(y1 <- puzzle.getColSize() until puzzle.getColSize()-size_y by -1) {
-      helper.getElementByID("r"+x+"|"+y1).setAttribute("class", style)
+      Helper.getElementByID("r"+x+"|"+y1).setAttribute("class", style)
     }
     for(x1 <- puzzle.getRowSize() until puzzle.getRowSize()-size_x by -1) {
-      helper.getElementByID("c"+x1+"|"+y).setAttribute("class", style)
+      Helper.getElementByID("c"+x1+"|"+y).setAttribute("class", style)
     }
   }
 
@@ -87,7 +83,7 @@ class Buttons(helper: Helper) {
       for(x <- 1 until gameboard.length) {
         if(gameboard(y)(x) == toreplace) {
           gameboard(y)(x) = replacewith
-          helper.getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
+          Helper.getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
         }
       }
     }
@@ -106,7 +102,7 @@ class Buttons(helper: Helper) {
         b = x1
       }
       for(x <- a to b) {
-        helper.getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
+        Helper.getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
         if (gameboard(y1)(x) == 0) gameboard(y1)(x) = -3
         else gameboard(y1)(x) = -Math.abs(gameboard(y1)(x))
       }
@@ -117,7 +113,7 @@ class Buttons(helper: Helper) {
         b = y1
       }
       for(y <- a to b) {
-        helper.getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
+        Helper.getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
         if (gameboard(y)(x1) == 0) gameboard(y)(x1) = -3
         else gameboard(y)(x1) = -Math.abs(gameboard(y)(x1))
       }
@@ -126,50 +122,49 @@ class Buttons(helper: Helper) {
 
   def createParser(size: String): Unit = {
     size match {
-      case "5 x 5" => puzzle = parser.parseDefinition(Heart.puzzle)
-      case "10 x 10" => puzzle = parser.parseDefinition(MrKrabs.puzzle)
-      case "15 x 15" => puzzle = parser.parseDefinition(House.puzzle)
-      case "20 x 20" => puzzle = parser.parseDefinition(SailingShip.puzzle)
-      case _ => puzzle = parser.parseDefinition(Heart.puzzle)
+      case "5 x 5" => puzzle = Parser.parseDefinition(Heart.puzzle)
+      case "10 x 10" => puzzle = Parser.parseDefinition(MrKrabs.puzzle)
+      case "15 x 15" => puzzle = Parser.parseDefinition(House.puzzle)
+      case "20 x 20" => puzzle = Parser.parseDefinition(SailingShip.puzzle)
+      case _ => puzzle = Parser.parseDefinition(Heart.puzzle)
     }
 
-    solver = new Solver
-    solver.solve(puzzle)
+    Solver.solve(puzzle)
   }
 
   def checkSolution(checkall: Boolean): Unit = {
-    var completecheck = solver.submitSolution(gameboard)
+    var completecheck = Solver.submitSolution(gameboard)
     if(completecheck) {
-      if(!gameend) menureference.winMenu()
+      if(!gameend) Menus.winMenu()
       gameend = true
     }
 
     if(checkall) {
-      menureference.looseMenu()
+      Menus.looseMenu()
     } else {
-      var check = solver.checkPosition(gameboard)
+      var check = Solver.checkPosition(gameboard)
       if (!check._1) {
         if (gamemode == Gamemode.FiveLife) {
           for(y <- check._2.indices) {
             for(x <- check._2.indices) {
               if (check._2(y)(x) == 1) {
                 gameboard(y+1)(x+1) = 2
-                helper.getElementByID((x+1)+"|"+(y+1)).setAttribute("class", "table-button-pressed2")
+                Helper.getElementByID((x+1)+"|"+(y+1)).setAttribute("class", "table-button-pressed2")
               }
             }
           }
           if(!gameend) {
             for (l <- lives - check._3 until lives) {
-              helper.getElementByID("heart" + (lives - 1)).setAttribute("class", "brokenheart")
+              Helper.getElementByID("heart" + (lives - 1)).setAttribute("class", "brokenheart")
               lives -= 1
             }
           }
           if (lives <= 0) {
-            if(!gameend) menureference.looseMenu()
+            if(!gameend) Menus.looseMenu()
             gameend = true
           }
         } else if (gamemode == Gamemode.Hardcore) {
-          if(!gameend) menureference.looseMenu()
+          if(!gameend) Menus.looseMenu()
           gameend = true
         }
       }
@@ -180,16 +175,16 @@ class Buttons(helper: Helper) {
     mode match {
       case "5 Lives Mode" =>
         gamemode = Gamemode.FiveLife
-        var spacer = helper.getElementByID("spacer")
-        helper.appendElement(spacer, "div", "lives","lives")
-        spacer = helper.getElementByID("lives")
-        helper.appendElement(spacer, "div", "text","hearttext")
-        spacer = helper.getElementByID("hearttext")
+        var spacer = Helper.getElementByID("spacer")
+        Helper.appendElement(spacer, "div", "lives","lives")
+        spacer = Helper.getElementByID("lives")
+        Helper.appendElement(spacer, "div", "text","hearttext")
+        spacer = Helper.getElementByID("hearttext")
         spacer.textContent = "Lives: "
 
-        spacer = helper.getElementByID("lives")
+        spacer = Helper.getElementByID("lives")
         for(i <- 0 to 4) {
-          helper.appendElement(spacer, "div", "heart","heart" + i)
+          Helper.appendElement(spacer, "div", "heart","heart" + i)
         }
 
       case "Hardcore Mode" => gamemode = Gamemode.Hardcore

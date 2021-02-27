@@ -1,6 +1,6 @@
 import scala.collection.mutable.ListBuffer
 
-class Parser {
+object Parser {
   /**
    * parses a given data file in which
    * 'r:' indicates, that the following lines of numbers are row segments and
