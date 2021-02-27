@@ -2,7 +2,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.Element
 
-class CreatePlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
+class PlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
 
   val y = cols + tablecols
   val x = rows + tablerows
