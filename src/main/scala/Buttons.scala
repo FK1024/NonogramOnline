@@ -150,7 +150,7 @@ class Buttons(helper: Helper) {
       if (check) {
         if (gamemode == Gamemode.FiveLife) {
           lives -= 1
-          helper.getElementByID("spacer").textContent = "Lives: " + lives
+          helper.getElementByID("heart"+(lives)).setAttribute("class", "brokenheart")
           if (lives <= 0) menureference.looseMenu()
         } else if (gamemode == Gamemode.Hardcore) {
           menureference.looseMenu()
@@ -163,7 +163,18 @@ class Buttons(helper: Helper) {
     mode match {
       case "5 Lives Mode" =>
         gamemode = Gamemode.FiveLife
-        helper.getElementByID("spacer").textContent = "Lives: " + lives
+        var spacer = helper.getElementByID("spacer")
+        helper.appendElement(spacer, "div", "lives","lives")
+        spacer = helper.getElementByID("lives")
+        helper.appendElement(spacer, "div", "text","hearttext")
+        spacer = helper.getElementByID("hearttext")
+        spacer.textContent = "Lives: "
+
+        spacer = helper.getElementByID("lives")
+        for(i <- 0 to 4) {
+          helper.appendElement(spacer, "div", "heart","heart" + i)
+        }
+
       case "Hardcore Mode" => gamemode = Gamemode.Hardcore
       case _ => gamemode = Gamemode.Default
     }

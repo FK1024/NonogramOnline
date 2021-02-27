@@ -69,7 +69,6 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       buttons.puzzle.rowSegments,
       buttons.puzzle.colSegments,
       buttons.buttonFunction))
-    //playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
     val spacer = document.createElement("div")
     spacer.setAttribute("class", "spacer50")
     spacer.id = "spacer1"
@@ -95,6 +94,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     selectionDiv.setAttribute("class", "menu")
     buttonDiv.setAttribute("class", "menu")
+    buttonDiv.id = "buttons"
     spacer.setAttribute("class", "spacer300")
     spacer.id = "spacer"
     settingsMenu.appendChild(selectionDiv)
@@ -193,8 +193,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
           helper.removeElementByID(modeDDDiv.id)
           sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
           helper.removeElementByID(sizeDDDiv.id)
-          helper.removeElementByID(submitBtn.id)
-          helper.removeElementByID(backBtn.id)
+          helper.removeElementByID(buttonDiv.id)
           createGame(sizeDDBtn.textContent, modeDDBtn.textContent)
         }
         // ToDo: createSolverInput
