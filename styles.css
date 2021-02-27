@@ -14,7 +14,7 @@ body {
     color: white;
     font-family: "Open Sans", sans-serif;
     text-align: center;
-    height: 150px;
+    height: 100px;
     margin-top: 50px;
 }
 
@@ -27,16 +27,39 @@ body {
     grid-auto-flow: column;
 }
 
+.h1 {
+  margin-bottom: 10px;
+  font-family: "Open Sans", sans-serif;
+  text-align: center;
+  font-size: 24px;
+  color: #0966c3;
+}
+
+.rules {
+    width: 60%;
+    margin-left: 20%;
+}
+
+.rulestext {
+    font-family: "Open Sans", sans-serif;
+    text-align: center;
+    font-size: 18px;
+    color: black;
+}
+
 .spacer50 {
     min-height: 50px;
     text-align: center;
     font-family: "Open Sans", sans-serif;
     font-size: 18px;
+    color: white;
 }
 
 .spacer300 {
     min-height: 300px;
 }
+
+
 
 /*
 ========================
