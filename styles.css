@@ -3,7 +3,7 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 30px;
-  background-color: grey;
+  background-color: white;
 }
 
 .header{
@@ -11,7 +11,7 @@ body {
     font-size: 43px;
     font-weight: bolder;
     letter-spacing: 3px;
-    color: white;
+    color: black;
     font-family: "Open Sans", sans-serif;
     text-align: center;
     height: 100px;
@@ -52,7 +52,7 @@ body {
     text-align: center;
     font-family: "Open Sans", sans-serif;
     font-size: 18px;
-    color: white;
+    color: black;
 }
 
 .spacer300 {
@@ -76,6 +76,7 @@ body {
     background-color: #0966c3;
     text-align: center;
     min-width: 150px;
+    border: none;
 }
 
 .dropdown-caption {
@@ -128,11 +129,12 @@ body {
 .table-button {
   color: black;
   background-color: transparent;
-  border-color: transparent;
   cursor: default;
   height: 30px;
   width: 30px;
   outline: none;
+  border: none;
+  display: block;
 }
 
 .table-button-pressed1 {
@@ -160,7 +162,7 @@ body {
 */
 
 table {
-  border: 1px solid #05386B;
+  border: 1px solid black;
   border-style: ridge;
   border-spacing: 0px;
   margin-bottom: 10px;
@@ -169,8 +171,8 @@ table {
 }
 
 th {
-  border: 1px solid #05386B;
-  color: white;
+  border: 1px solid black;
+  color: black;
   user-select: none;
 }
 
@@ -182,5 +184,6 @@ th {
 .table-size-hover {
     width: 30px;
     height: 30px;
-    background-color: red;
+    background-color: #0966c3;
+    color: white;
 }
