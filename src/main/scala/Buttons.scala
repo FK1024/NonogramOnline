@@ -14,6 +14,7 @@ class Buttons(helper: Helper) {
   var last_x = -1
   var last_y = -1
   var lives = 5
+  var gameend = false
 
   var parser = new Parser()
 
@@ -87,7 +88,6 @@ class Buttons(helper: Helper) {
         if(gameboard(y)(x) == toreplace) {
           gameboard(y)(x) = replacewith
           helper.getElementByID(x+"|"+y).setAttribute("class", buttonvalue)
-          //helper.editElementByID("d"+x+"|"+y, replacewith.toString)
         }
       }
     }
@@ -109,7 +109,6 @@ class Buttons(helper: Helper) {
         helper.getElementByID(x+"|"+y1).setAttribute("class", buttonclass)
         if (gameboard(y1)(x) == 0) gameboard(y1)(x) = -3
         else gameboard(y1)(x) = -Math.abs(gameboard(y1)(x))
-        //helper.editElementByID("d"+x+"|"+y1, gameboard(y1)(x).toString)
       }
     } else {
       b = By; a = y1
@@ -121,7 +120,6 @@ class Buttons(helper: Helper) {
         helper.getElementByID(x1+"|"+y).setAttribute("class", buttonclass)
         if (gameboard(y)(x1) == 0) gameboard(y)(x1) = -3
         else gameboard(y)(x1) = -Math.abs(gameboard(y)(x1))
-        //helper.editElementByID("d"+x1+"|"+y, gameboard(y)(x1).toString)
       }
     }
   }
@@ -141,19 +139,38 @@ class Buttons(helper: Helper) {
 
   def checkSolution(checkall: Boolean): Unit = {
     var completecheck = solver.submitSolution(gameboard)
-    if(completecheck) menureference.winMenu()
+    if(completecheck) {
+      if(!gameend) menureference.winMenu()
+      gameend = true
+    }
 
     if(checkall) {
       menureference.looseMenu()
     } else {
-      var check = !solver.checkPosition(gameboard)
-      if (check) {
+      var check = solver.checkPosition(gameboard)
+      if (!check._1) {
         if (gamemode == Gamemode.FiveLife) {
-          lives -= 1
-          helper.getElementByID("heart"+(lives)).setAttribute("class", "brokenheart")
-          if (lives <= 0) menureference.looseMenu()
+          for(y <- check._2.indices) {
+            for(x <- check._2.indices) {
+              if (check._2(y)(x) == 1) {
+                gameboard(y+1)(x+1) = 2
+                helper.getElementByID((x+1)+"|"+(y+1)).setAttribute("class", "table-button-pressed2")
+              }
+            }
+          }
+          if(!gameend) {
+            for (l <- lives - check._3 until lives) {
+              helper.getElementByID("heart" + (lives - 1)).setAttribute("class", "brokenheart")
+              lives -= 1
+            }
+          }
+          if (lives <= 0) {
+            if(!gameend) menureference.looseMenu()
+            gameend = true
+          }
         } else if (gamemode == Gamemode.Hardcore) {
-          menureference.looseMenu()
+          if(!gameend) menureference.looseMenu()
+          gameend = true
         }
       }
     }

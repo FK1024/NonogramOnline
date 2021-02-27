@@ -49,6 +49,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
   def createGame(size: String, mode: String): Unit = {
     buttons.createParser(size)
     buttons.setGameMode(mode)
+    buttons.gameend = false
     helper.removeElementByID("main-menu")
     buttons.lives = 5
     helper.getElementByID("spacer").setAttribute("class", "spacer50")
