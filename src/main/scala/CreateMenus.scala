@@ -319,6 +319,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       resultTable.appendChild(resultTableRow)
       for (c <- 0 until size) {
         val resultTableCell = document.createElement("th")
+        resultTableCell.setAttribute("class", "th1")
         resultTableRow.appendChild(resultTableCell)
         val resultTableCellDiv = document.createElement("div")
         resultTableCellDiv.setAttribute("class", "table-size")

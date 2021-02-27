@@ -199,7 +199,6 @@ body {
 */
 
 table {
-  margin-bottom: 10px;
   margin-left: auto;
   margin-right: auto;
   border-spacing: 0px;
@@ -245,10 +244,12 @@ th {
 
 .column-segments {
     vertical-align: bottom;
+    border: 1px solid black;
 }
 
 .row-segments {
     text-align: right;
+    border: 1px solid black;
 }
 
 .column-segments-input {
