@@ -8,11 +8,13 @@ class Solver() {
 
   private var fieldSize = 0
   private var gameField: Array[Array[Int]] = Array[Array[Int]]()
+  private var wrongField: Array[Array[Int]] = Array[Array[Int]]()
 
   def solve(puzzle: Puzzle): Array[Array[Int]] = {
     // initialize
     fieldSize = puzzle.rowSegments.length
     gameField = Array.ofDim[Int](fieldSize, fieldSize)
+    wrongField = Array.ofDim[Int](fieldSize, fieldSize)
 
     // check for overfilled rows/cols
     for (i <- 0 until fieldSize) {
@@ -239,8 +241,25 @@ class Solver() {
     true
   }
 
-  def checkPosition(submission: Array[Array[Int]], y: Int, x: Int): Boolean = {
-    if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) return false
-    true
+  def checkPosition(submission: Array[Array[Int]]): (Boolean, Array[Array[Int]], Int) = {
+    var check = true
+    var count = 0
+
+    for(y <- wrongField.indices) {
+      for(x <- wrongField.indices) {
+        wrongField(y)(x) = 0
+      }
+    }
+
+    for(y <- gameField.indices) {
+      for(x <- gameField.indices) {
+        if(submission(y+1)(x+1) == Set && gameField(y)(x) != Set) {
+          check = false
+          wrongField(y)(x) = 1
+          count += 1
+        }
+      }
+    }
+    return (check, wrongField, count)
   }
 }

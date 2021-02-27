@@ -40,6 +40,8 @@ class CreatePlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
             if (r.length >= rows-j) {
               div.textContent = r(r.length-rows+j).toString
               div.id = "c"+(j+1)+"|"+(i-cols+1)
+              if (j == rows-1) content.setAttribute("class", "th2")
+              else content.setAttribute("class", "th1")
             }
           }
         } else if(i < cols) {
@@ -48,10 +50,13 @@ class CreatePlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
             if (r.length >= cols-i) {
               div.textContent = r(r.length-cols+i).toString
               div.id = "r"+(j-rows+1)+"|"+(i+1)
+              if (i == cols-1) content.setAttribute("class", "th3")
+              else content.setAttribute("class", "th1")
             }
           }
         } else {
           div.appendChild(createTableButton(j-rows+1,i-cols+1, buttonFunction))
+          content.setAttribute("class", "th1")
         }
         content.appendChild(div)
         tablerow.appendChild(content)

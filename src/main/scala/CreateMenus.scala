@@ -21,6 +21,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
   def backToMainMenu(eventfunc: () => Unit): Unit = {
     helper.removeElementByID("mySettingsMenu")
+    helper.removeElementByID("mySettingsMenu")
     helper.removeElementByID("playfield")
     helper.removeElementByID("myPuzzleInputGUI")
     eventfunc()
@@ -44,12 +45,13 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     buttons.createButton("Play Nonogram","menu-button",mainmenuElement,true, () => toPlaySettings())
     buttons.createButton("Solver","menu-button",mainmenuElement,true, () => toSolverSettings())
-    //buttons.createButton("Rules","menu-button",mainmenuElement,true, () => createGame(_,_))
+    buttons.createButton("Rules","menu-button",mainmenuElement,true, () => createRulesMenu())
   }
 
   def createGame(size: String, mode: String): Unit = {
     buttons.createParser(size)
     buttons.setGameMode(mode)
+    buttons.gameend = false
     helper.removeElementByID("main-menu")
     buttons.lives = 5
     helper.getElementByID("spacer").setAttribute("class", "spacer50")
@@ -70,7 +72,6 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
       buttons.puzzle.rowSegments,
       buttons.puzzle.colSegments,
       buttons.buttonFunction))
-    //playfieldElement.appendChild(buttons.playfield.createDebugGameBoard(buttons.gameboard))
     val spacer = document.createElement("div")
     spacer.setAttribute("class", "spacer50")
     spacer.id = "spacer1"
@@ -79,7 +80,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     helper.appendElement(playfieldElement, "div", "menu","menu")
     var row1 = helper.getElementByID("menu")
     buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
-    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true,-1,-1))
+    buttons.createButton("Check","menu-button",row1,true, () => buttons.checkSolution(true))
   }
 
   def createSettingsMenu(addGameModeOptions: Boolean): Unit = {
@@ -96,6 +97,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
 
     selectionDiv.setAttribute("class", "menu")
     buttonDiv.setAttribute("class", "menu")
+    buttonDiv.id = "buttons"
     spacer.setAttribute("class", "spacer300")
     spacer.id = "spacer"
     settingsMenu.appendChild(selectionDiv)
@@ -194,8 +196,7 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
           helper.removeElementByID(modeDDDiv.id)
           sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
           helper.removeElementByID(sizeDDDiv.id)
-          helper.removeElementByID(submitBtn.id)
-          helper.removeElementByID(backBtn.id)
+          helper.removeElementByID(buttonDiv.id)
           createGame(sizeDDBtn.textContent, modeDDBtn.textContent)
         } else {
           helper.removeElementByID(settingsMenu.id)
@@ -214,6 +215,38 @@ class CreateMenus(helper: Helper, buttons: Buttons) {
     }})
 
     buttonDiv.appendChild(submitBtn)
+  }
+
+  def createRulesMenu(): Unit = {
+    helper.removeElementByID("main-menu")
+
+    helper.appendElement(document.body, "div", "rules", "rules")
+    var rulesElement = helper.getElementByID("rules")
+
+    helper.appendElement(rulesElement, "div", "h1", "rulestext1")
+    var rulesTextElement = helper.getElementByID("rulestext1")
+    rulesTextElement.textContent = "The Rules"
+    helper.appendElement(rulesElement, "div", "rulestext", "rulestext2")
+    rulesTextElement = helper.getElementByID("rulestext2")
+    rulesTextElement.textContent = helper.rules1()
+    helper.appendElement(rulesElement, "br", "", "")
+    helper.appendElement(rulesElement, "div", "rulestext", "rulestext3")
+    rulesTextElement = helper.getElementByID("rulestext3")
+    rulesTextElement.textContent = helper.rules2()
+    helper.appendElement(rulesElement, "br", "", "")
+
+    helper.appendElement(rulesElement, "div", "h1", "rulestext4")
+    rulesTextElement = helper.getElementByID("rulestext4")
+    rulesTextElement.textContent = "Solution techniques"
+    helper.appendElement(rulesElement, "div", "rulestext", "rulestext5")
+    rulesTextElement = helper.getElementByID("rulestext5")
+    rulesTextElement.textContent = helper.rules3()
+
+    helper.appendElement(rulesElement, "div", "spacer50", "spacer50")
+    helper.appendElement(rulesElement, "div", "menu","menu")
+    var row1 = helper.getElementByID("menu")
+    buttons.createButton("Back","menu-button",row1,true, () => backToMenu("rules",() => createMainMenu()))
+    buttons.createButton("Play","menu-button",row1,true, () => backToMenu("rules",() => toPlaySettings()))
   }
 
   def winloose(s: String): Unit = {
