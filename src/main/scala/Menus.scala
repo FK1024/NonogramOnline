@@ -266,7 +266,6 @@ object Menus {
     "To solve a puzzle, one needs to determine which cells will be boxes and which will be empty. " +
       "Determining which cells are to be left empty is as important as determining which to fill. " +
       "Later in the solving process, the spaces help determine where a clue may spread. " +
-      "Solvers usually use a dot or a cross to mark cells they are certain are spaces. " +
       "It is also important never to guess. Only cells that can be determined by logic should be filled. " +
       "If guessing, a single error can spread over the entire field and completely ruin the solution."
   }
