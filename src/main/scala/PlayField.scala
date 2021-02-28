@@ -25,18 +25,18 @@ class PlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
   }
 
   def createPlayTable(currentrows: List[List[Int]], currentcols: List[List[Int]], buttonFunction: (Int, Int, Int, Int, Boolean, Boolean, String) => Unit): Element = {
-    var table = document.createElement("table")
+    val table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
     for(i <- 0 until y) {
-      var tablerow = document.createElement("tr")
+      val tablerow = document.createElement("tr")
       for(j <- 0 until x) {
-        var content = document.createElement("th")
-        var div = document.createElement("div")
+        val content = document.createElement("th")
+        val div = document.createElement("div")
         div.setAttribute("class", "table-size")
         if(j < rows) {
           if(i >= cols) {
-            var r = currentrows(i-cols)
+            val r = currentrows(i - cols)
             if (r.length >= rows-j) {
               div.textContent = r(r.length-rows+j).toString
               div.id = "c"+(j+1)+"|"+(i-cols+1)
@@ -46,7 +46,7 @@ class PlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
           }
         } else if(i < cols) {
           if(j >= rows) {
-            var r = currentcols(j-rows)
+            val r = currentcols(j - rows)
             if (r.length >= cols-i) {
               div.textContent = r(r.length-cols+i).toString
               div.id = "r"+(j-rows+1)+"|"+(i+1)
@@ -107,14 +107,14 @@ class PlayField(tablerows: Int, tablecols: Int, rows: Int, cols: Int) {
   //-------------------------------------------------------------
   // Only for Debug TODO remove when project is finished
   def createDebugGameBoard(gameboard: Array[Array[Int]]): Element = {
-    var table = document.createElement("table")
+    val table = document.createElement("table")
     table.setAttribute("class","styled-table")
 
     for(i <- 0 to tablecols) {
-      var tablerow = document.createElement("tr")
+      val tablerow = document.createElement("tr")
       for(j <- 0 to tablerows) {
-        var content = document.createElement("th")
-        var div = document.createElement("div")
+        val content = document.createElement("th")
+        val div = document.createElement("div")
         div.setAttribute("class", "table-size")
         if(j==0) {
           div.textContent = i.toString

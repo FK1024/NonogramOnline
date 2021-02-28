@@ -1,36 +1,38 @@
+import Enums.{GameMode, State}
 import org.scalajs.dom
 import org.scalajs.dom.document
 
 import scala.collection.mutable.ListBuffer
 
 object Menus {
+  var gameContext = new GameContext()
 
   /*
   ========================
-           Helper
+    Navigation Functions
   ========================
   */
   def toSolverSettings(): Unit = {
-    Helper.removeElementByID("main-menu")
+    DomHelper.removeElementByID("main-menu")
     createSettingsMenu(false)
   }
 
   def toPlaySettings(): Unit = {
-    Helper.removeElementByID("main-menu")
+    DomHelper.removeElementByID("main-menu")
     createSettingsMenu(true)
   }
 
   def backToMainMenu(eventfunc: () => Unit): Unit = {
-    Helper.removeElementByID("mySettingsMenu")
-    Helper.removeElementByID("mySettingsMenu")
-    Helper.removeElementByID("playfield")
-    Helper.removeElementByID("myPuzzleInputGUI")
+    DomHelper.removeElementByID("mySettingsMenu")
+    DomHelper.removeElementByID("mySettingsMenu")
+    DomHelper.removeElementByID("playfield")
+    DomHelper.removeElementByID("myPuzzleInputGUI")
     eventfunc()
   }
 
   def backToMenu(toremove: String, eventfunc: () => Unit): Unit = {
-    Helper.removeElementByID("mySettingsMenu")
-    Helper.removeElementByID(toremove)
+    DomHelper.removeElementByID("mySettingsMenu")
+    DomHelper.removeElementByID(toremove)
     eventfunc()
   }
 
@@ -41,56 +43,75 @@ object Menus {
   */
 
   def createMainMenu(): Unit = {
-    Helper.appendElement(document.body,"div", "menu", "main-menu")
-    var mainmenuElement = Helper.getElementByID("main-menu")
+    val mainMenuElement = DomHelper.appendElement(document.body,"div", "menu", "main-menu")
 
-    Buttons.createButton("Play Nonogram","menu-button",mainmenuElement,true, () => toPlaySettings())
-    Buttons.createButton("Solver","menu-button",mainmenuElement,true, () => toSolverSettings())
-    Buttons.createButton("Rules","menu-button",mainmenuElement,true, () => createRulesMenu())
+    Buttons.createButton("Play Nonogram","menu-button", mainMenuElement, () => toPlaySettings())
+    Buttons.createButton("Solver","menu-button", mainMenuElement, () => toSolverSettings())
+    Buttons.createButton("Rules","menu-button", mainMenuElement, () => createRulesMenu())
   }
 
-  def createGame(size: String, mode: String): Unit = {
-    Buttons.createParser(size)
-    Buttons.setGameMode(mode)
-    Buttons.gameend = false
-    Helper.removeElementByID("main-menu")
-    Buttons.lives = 5
-    Helper.getElementByID("spacer").setAttribute("class", "spacer50")
-    Helper.appendElement(document.body,"div", "playfield", "playfield")
-    var playfieldElement = Helper.getElementByID("playfield")
+  def createGame(): Unit = {
+    gameContext.puzzle = getRandomPuzzle(gameContext.size)
+    gameContext.solution = Solver.solve(gameContext.puzzle)
+    if (gameContext.mode == GameMode.FiveLives) addHearts()
+    gameContext.gameOver = false
+    gameContext.lives = 5
 
-    var y = Buttons.puzzle.getColSegmentSize() + Buttons.puzzle.getColSize()
-    var x = Buttons.puzzle.getRowSegmentSize() + Buttons.puzzle.getRowSize()
+    DomHelper.removeElementByID("main-menu")
+    document.getElementById("spacer").setAttribute("class", "spacer50")
+    val playFieldElement = DomHelper.appendElement(document.body, "div", "playfield", "playfield")
 
     Buttons.playfield = new PlayField(
-      Buttons.puzzle.getRowSegmentSize(),
-      Buttons.puzzle.getColSegmentSize(),
-      Buttons.puzzle.getRowSize(),
-      Buttons.puzzle.getColSize(),
+      gameContext.puzzle.getRowSegmentSize(),
+      gameContext.puzzle.getColSegmentSize(),
+      gameContext.puzzle.getRowSize(),
+      gameContext.puzzle.getColSize(),
     )
     Buttons.gameboard = Buttons.playfield.initGameBoard()
-    playfieldElement.appendChild(Buttons.playfield.createPlayTable(
-      Buttons.puzzle.rowSegments,
-      Buttons.puzzle.colSegments,
+    playFieldElement.appendChild(Buttons.playfield.createPlayTable(
+      gameContext.puzzle.rowSegments,
+      gameContext.puzzle.colSegments,
       Buttons.buttonFunction))
     val spacer = document.createElement("div")
     spacer.setAttribute("class", "spacer50")
     spacer.id = "spacer1"
-    playfieldElement.appendChild(spacer)
+    playFieldElement.appendChild(spacer)
 
-    Helper.appendElement(playfieldElement, "div", "menu","menu")
-    var row1 = Helper.getElementByID("menu")
-    Buttons.createButton("Back","menu-button",row1,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
-    Buttons.createButton("Check","menu-button",row1,true, () => Buttons.checkSolution(true))
+    val row1 = DomHelper.appendElement(playFieldElement, "div", "menu", "menu")
+    Buttons.createButton("Back", "menu-button", row1, () => backToMenu("playfield", () => createSettingsMenu(true)))
+    Buttons.createButton("Check", "menu-button", row1, () => Buttons.checkSolution(true))
+  }
+
+  // ToDo: load random level instead
+  private def getRandomPuzzle(size: Int) = {
+    size match {
+      case 5 => Parser.parseDefinition(Heart.puzzle)
+      case 10 => Parser.parseDefinition(MrKrabs.puzzle)
+      case 15 => Parser.parseDefinition(House.puzzle)
+      case 20 => Parser.parseDefinition(SailingShip.puzzle)
+      case 25 => throw new NotImplementedError()
+    }
+  }
+
+  private def addHearts(): Unit = {
+    var spacer = document.getElementById("spacer")
+    spacer = DomHelper.appendElement(spacer, "div", "lives","lives")
+    spacer = DomHelper.appendElement(spacer, "div", "text","hearttext")
+    spacer.textContent = "Lives: "
+
+    spacer = document.getElementById("lives")
+    for(i <- 0 to 4) {
+      DomHelper.appendElement(spacer, "div", "heart","heart" + i)
+    }
   }
 
   def createSettingsMenu(addGameModeOptions: Boolean): Unit = {
     var selectedMode = !addGameModeOptions
     var selectedSize = false
 
-    val settingsMenu = document.createElement("div")
-    settingsMenu.id = "mySettingsMenu"
-    document.body.appendChild(settingsMenu)
+    val settingsMenuDiv = document.createElement("div")
+    settingsMenuDiv.id = "mySettingsMenu"
+    document.body.appendChild(settingsMenuDiv)
 
     val selectionDiv = document.createElement("div")
     val buttonDiv = document.createElement("div")
@@ -101,9 +122,9 @@ object Menus {
     buttonDiv.id = "buttons"
     spacer.setAttribute("class", "spacer300")
     spacer.id = "spacer"
-    settingsMenu.appendChild(selectionDiv)
-    settingsMenu.appendChild(spacer)
-    settingsMenu.appendChild(buttonDiv)
+    settingsMenuDiv.appendChild(selectionDiv)
+    settingsMenuDiv.appendChild(spacer)
+    settingsMenuDiv.appendChild(buttonDiv)
 
     // Game mode selection
     val modeCaptionDiv = document.createElement("div")
@@ -183,7 +204,7 @@ object Menus {
       sizeContentDiv.appendChild(sizeBtn)
     }
 
-    val backBtn = Buttons.createButton("Back", "menu-button", buttonDiv, true, () => backToMainMenu(() => createMainMenu()))
+    val backBtn = Buttons.createButton("Back", "menu-button", buttonDiv, () => backToMainMenu(() => createMainMenu()))
     backBtn.id = "myBackButton"
 
     val submitBtn = document.createElement("button")
@@ -192,25 +213,32 @@ object Menus {
     submitBtn.textContent = if (addGameModeOptions) "Create Game" else "Input Numbers"
     submitBtn.addEventListener("click", {e: dom.MouseEvent => {
       if (selectedMode && selectedSize) {
+        // parse size
+        gameContext.size = sizeDDBtn.textContent match {
+          case "5 x 5" => 5
+          case "10 x 10" => 10
+          case "15 x 15" => 15
+          case "20 x 20" => 20
+          case "25 x 25" => 25
+          case _ => throw new Exception(s"Game field size '${sizeDDBtn.textContent}' is not valid")
+        }
         if (addGameModeOptions) {
-          modeCaptionDiv.textContent += s" ${modeDDBtn.textContent}"
-          Helper.removeElementByID(modeDDDiv.id)
-          sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
-          Helper.removeElementByID(sizeDDDiv.id)
-          Helper.removeElementByID(buttonDiv.id)
-          createGame(sizeDDBtn.textContent, modeDDBtn.textContent)
-        } else {
-          Helper.removeElementByID(settingsMenu.id)
-
-          val size = sizeDDBtn.textContent match {
-            case "5 x 5" => 5
-            case "10 x 10" => 10
-            case "15 x 15" => 15
-            case "20 x 20" => 20
-            case "25 x 25" => 25
-            case _ => throw new Exception(s"Game field size '${sizeDDBtn.textContent}' is not valid")
+          // parse mode
+          gameContext.mode = modeDDBtn.textContent match {
+            case "5 Lives Mode" => GameMode.FiveLives
+            case "Hardcore Mode" => GameMode.Hardcore
+            case _ => throw new Exception(s"Game mode '${modeDDBtn.textContent}' is not valid'")
           }
-          createPuzzleInput(size)
+          // update captions and remove dropdowns
+          modeCaptionDiv.textContent += s" ${modeDDBtn.textContent}"
+          DomHelper.removeElementByID(modeDDDiv.id)
+          sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
+          DomHelper.removeElementByID(sizeDDDiv.id)
+          DomHelper.removeElementByID(buttonDiv.id)
+          createGame()
+        } else {
+          DomHelper.removeElementByID(settingsMenuDiv.id)
+          createPuzzleInput()
         }
       }
     }})
@@ -218,50 +246,65 @@ object Menus {
     buttonDiv.appendChild(submitBtn)
   }
 
+  def rules1(): String = {
+    "Your aim in these puzzles is to colour the whole grid into black and white squares. " +
+      "Leaving one empty, is equal to marking it white. " +
+      "Beside each row of the grid are listed the lengths of the runs of black squares on that row. " +
+      "Above each column are listed the lengths of the runs of black squares in that column. " +
+      "These numbers tell you the runs of black squares in that row/column. So, if you see '10 1', " +
+      "that tells you that there will be a run of exactly 10 black squares, followed by one or more white square, followed by a single black square. " +
+      "There may be more white squares before/after this sequence. "
+  }
+
+  def rules2(): String = {
+    "Left click on a square to make it black. Right click to mark it white. Click and drag to mark more than one square"
+  }
+
+  def rules3(): String = {
+    "To solve a puzzle, one needs to determine which cells will be boxes and which will be empty. " +
+      "Determining which cells are to be left empty is as important as determining which to fill. " +
+      "Later in the solving process, the spaces help determine where a clue may spread. " +
+      "Solvers usually use a dot or a cross to mark cells they are certain are spaces. " +
+      "It is also important never to guess. Only cells that can be determined by logic should be filled. " +
+      "If guessing, a single error can spread over the entire field and completely ruin the solution."
+  }
+
   def createRulesMenu(): Unit = {
-    Helper.removeElementByID("main-menu")
+    DomHelper.removeElementByID("main-menu")
 
-    Helper.appendElement(document.body, "div", "rules", "rules")
-    var rulesElement = Helper.getElementByID("rules")
+    val rulesElement = DomHelper.appendElement(document.body, "div", "rules", "rules")
 
-    Helper.appendElement(rulesElement, "div", "h1", "rulestext1")
-    var rulesTextElement = Helper.getElementByID("rulestext1")
+    var rulesTextElement = DomHelper.appendElement(rulesElement, "div", "h1", "rulestext1")
     rulesTextElement.textContent = "The Rules"
-    Helper.appendElement(rulesElement, "div", "rulestext", "rulestext2")
-    rulesTextElement = Helper.getElementByID("rulestext2")
-    rulesTextElement.textContent = Helper.rules1()
-    Helper.appendElement(rulesElement, "br", "", "")
-    Helper.appendElement(rulesElement, "div", "rulestext", "rulestext3")
-    rulesTextElement = Helper.getElementByID("rulestext3")
-    rulesTextElement.textContent = Helper.rules2()
-    Helper.appendElement(rulesElement, "br", "", "")
+    rulesTextElement = DomHelper.appendElement(rulesElement, "div", "rulestext", "rulestext2")
+    rulesTextElement.textContent = rules1()
+    DomHelper.appendElement(rulesElement, "br", "", "")
+    rulesTextElement = DomHelper.appendElement(rulesElement, "div", "rulestext", "rulestext3")
+    rulesTextElement.textContent = rules2()
+    DomHelper.appendElement(rulesElement, "br", "", "")
 
-    Helper.appendElement(rulesElement, "div", "h1", "rulestext4")
-    rulesTextElement = Helper.getElementByID("rulestext4")
+    rulesTextElement = DomHelper.appendElement(rulesElement, "div", "h1", "rulestext4")
     rulesTextElement.textContent = "Solution techniques"
-    Helper.appendElement(rulesElement, "div", "rulestext", "rulestext5")
-    rulesTextElement = Helper.getElementByID("rulestext5")
-    rulesTextElement.textContent = Helper.rules3()
+    rulesTextElement = DomHelper.appendElement(rulesElement, "div", "rulestext", "rulestext5")
+    rulesTextElement.textContent = rules3()
 
-    Helper.appendElement(rulesElement, "div", "spacer50", "spacer50")
-    Helper.appendElement(rulesElement, "div", "menu","menu")
-    var row1 = Helper.getElementByID("menu")
-    Buttons.createButton("Back","menu-button",row1,true, () => backToMenu("rules",() => createMainMenu()))
-    Buttons.createButton("Play","menu-button",row1,true, () => backToMenu("rules",() => toPlaySettings()))
+    DomHelper.appendElement(rulesElement, "div", "spacer50", "spacer50")
+    val row1 = DomHelper.appendElement(rulesElement, "div", "menu", "menu")
+    Buttons.createButton("Back", "menu-button", row1, () => backToMenu("rules", () => createMainMenu()))
+    Buttons.createButton("Play", "menu-button", row1, () => backToMenu("rules", () => toPlaySettings()))
   }
 
   def winloose(s: String): Unit = {
-    var playfieldElement = Helper.getElementByID("playfield")
+    var playfieldElement = document.getElementById("playfield")
 
-    var row1 = Helper.getElementByID("spacer1")
+    var row1 = document.getElementById("spacer1")
     row1.textContent = s
 
-    Helper.removeElementByID("menu")
-    Helper.appendElement(playfieldElement, "div", "menu","menu")
-    var row2 = Helper.getElementByID("menu")
+    DomHelper.removeElementByID("menu")
+    val row2 = DomHelper.appendElement(playfieldElement, "div", "menu", "menu")
 
-    Buttons.createButton("Back to Main Menu","menu-button",row2,true, () => backToMenu("playfield", () => createMainMenu()))
-    Buttons.createButton("Play Again","menu-button",row2,true, () => backToMenu("playfield", () => createSettingsMenu(true)))
+    Buttons.createButton("Back to Main Menu", "menu-button", row2, () => backToMenu("playfield", () => createMainMenu()))
+    Buttons.createButton("Play Again", "menu-button", row2, () => backToMenu("playfield", () => createSettingsMenu(true)))
   }
 
   def looseMenu(): Unit = {
@@ -272,7 +315,7 @@ object Menus {
    winloose("You Won!")
   }
 
-  def createPuzzleInput(size: Int): Unit = {
+  def createPuzzleInput(): Unit = {
     val puzzleInputDiv = document.createElement("div")
     puzzleInputDiv.id = "myPuzzleInputGUI"
     document.body.appendChild(puzzleInputDiv)
@@ -315,10 +358,10 @@ object Menus {
     // result table
     val resultTable = document.createElement("table")
     resultTable.setAttribute("class","styled-table")
-    for (r <- 0 until size) {
+    for (r <- 0 until gameContext.size) {
       val resultTableRow = document.createElement("tr")
       resultTable.appendChild(resultTableRow)
-      for (c <- 0 until size) {
+      for (c <- 0 until gameContext.size) {
         val resultTableCell = document.createElement("th")
         resultTableCell.setAttribute("class", "th1")
         resultTableRow.appendChild(resultTableCell)
@@ -335,7 +378,7 @@ object Menus {
     colSegsTable.setAttribute("class","styled-table")
     val colSegsTableRow = document.createElement("tr")
     colSegsTable.appendChild(colSegsTableRow)
-    for (c <- 0 until size) {
+    for (c <- 0 until gameContext.size) {
       val colSegsTableCell = document.createElement("th")
       colSegsTableCell.setAttribute("class", "column-segments")
       colSegsTableRow.appendChild(colSegsTableCell)
@@ -350,7 +393,7 @@ object Menus {
     // row segments input table
     val rowSegsTable = document.createElement("table")
     rowSegsTable.setAttribute("class", "styled-table")
-    for (r <- 0 until size) {
+    for (r <- 0 until gameContext.size) {
       val rowSegsTableRow = document.createElement("tr")
       rowSegsTable.appendChild(rowSegsTableRow)
       val rowSegsTableCell = document.createElement("th")
@@ -367,15 +410,15 @@ object Menus {
     }
     thirdCellDiv.appendChild(rowSegsTable)
 
-    val backBtn = Buttons.createButton("Back", "menu-button", puzzleInputDiv, true, () => backToMainMenu(() => createMainMenu()))
+    val backBtn = Buttons.createButton("Back", "menu-button", puzzleInputDiv, () => backToMainMenu(() => createMainMenu()))
     backBtn.id = "myBackButton"
 
-    val solveBtn = Buttons.createButton("Solve", "menu-button", puzzleInputDiv, true, () => {
+    val solveBtn = Buttons.createButton("Solve", "menu-button", puzzleInputDiv, () => {
       val rowSegments = new ListBuffer[List[Int]]()
       val colSegments = new ListBuffer[List[Int]]()
-      for (i <- 0 until size) {
-        rowSegments.append(Helper.getElementByID(s"row_$i").textContent.split(" ").toList.map(_.toInt))
-        colSegments.append(Helper.getElementByID(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
+      for (i <- 0 until gameContext.size) {
+        rowSegments.append(document.getElementById(s"row_$i").textContent.split(" ").toList.map(_.toInt))
+        colSegments.append(document.getElementById(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
       }
       runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
     })
@@ -387,7 +430,7 @@ object Menus {
 
     for (r <- puzzle.rowSegments.indices) {
       for (c <- puzzle.colSegments.indices) {
-        val cellDiv = Helper.getElementByID(s"$r|$c")
+        val cellDiv = document.getElementById(s"$r|$c")
         solution(r)(c) match {
           case State.Blank => cellDiv.setAttribute("class", "table-button-pressed2")
           case State.Set => cellDiv.setAttribute("class", "table-button-pressed1")

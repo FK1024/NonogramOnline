@@ -1,16 +1,16 @@
-import Dimension.{Column, Dimension, Row}
+import Enums.Dimension.Dimension
+import Enums.{Dimension, State}
+
 import scala.collection.mutable.ListBuffer
 
 object Solver {
   private var fieldSize = 0
   private var gameField: Array[Array[Int]] = Array[Array[Int]]()
-  private var wrongField: Array[Array[Int]] = Array[Array[Int]]()
 
   def solve(puzzle: Puzzle): Array[Array[Int]] = {
     // initialize
     fieldSize = puzzle.rowSegments.length
     gameField = Array.ofDim[Int](fieldSize, fieldSize)
-    wrongField = Array.ofDim[Int](fieldSize, fieldSize)
 
     // check for overfilled rows/cols
     for (i <- 0 until fieldSize) {
@@ -53,8 +53,8 @@ object Solver {
         solvedItems.clear()
 
         openSet = dim match {
-          case Row => openRows
-          case Column => openCols
+          case Dimension.Row => openRows
+          case Dimension.Column => openCols
         }
 
         for (index <- openSet) {
@@ -225,37 +225,5 @@ object Solver {
         }
         true
     }
-  }
-
-  def submitSolution(submission: Array[Array[Int]]): Boolean = {
-    for(y <- gameField.indices) {
-      for(x <- gameField.indices) {
-        if(gameField(y)(x) == State.Set && submission(y+1)(x+1) != State.Set) return false
-        if(gameField(y)(x) == State.Blank && submission(y+1)(x+1) == State.Set) return false
-      }
-    }
-    true
-  }
-
-  def checkPosition(submission: Array[Array[Int]]): (Boolean, Array[Array[Int]], Int) = {
-    var check = true
-    var count = 0
-
-    for(y <- wrongField.indices) {
-      for(x <- wrongField.indices) {
-        wrongField(y)(x) = 0
-      }
-    }
-
-    for(y <- gameField.indices) {
-      for(x <- gameField.indices) {
-        if(submission(y+1)(x+1) == State.Set && gameField(y)(x) != State.Set) {
-          check = false
-          wrongField(y)(x) = 1
-          count += 1
-        }
-      }
-    }
-    return (check, wrongField, count)
   }
 }

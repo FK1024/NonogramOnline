@@ -1,3 +1,5 @@
+import Enums.Dimension
+
 import scala.collection.mutable.ListBuffer
 
 object Parser {
