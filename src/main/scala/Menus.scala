@@ -24,7 +24,6 @@ object Menus {
 
   def backToMainMenu(eventfunc: () => Unit): Unit = {
     DomHelper.removeElementByID("mySettingsMenu")
-    DomHelper.removeElementByID("mySettingsMenu")
     DomHelper.removeElementByID("playfield")
     DomHelper.removeElementByID("myPuzzleInputGUI")
     eventfunc()
@@ -95,13 +94,13 @@ object Menus {
 
   private def addHearts(): Unit = {
     var spacer = document.getElementById("spacer")
-    spacer = DomHelper.appendElement(spacer, "div", "lives","lives")
-    spacer = DomHelper.appendElement(spacer, "div", "text","hearttext")
-    spacer.textContent = "Lives: "
+    DomHelper.removeElementByID("lives")
+    var lives = DomHelper.appendElement(spacer, "div", "lives","lives")
+    val hearttext = DomHelper.appendElement(lives, "div", "text","hearttext")
+    hearttext.textContent = "Lives: "
 
-    spacer = document.getElementById("lives")
     for(i <- 0 to 4) {
-      DomHelper.appendElement(spacer, "div", "heart","heart" + i)
+      DomHelper.appendElement(lives, "div", "heart","heart" + i)
     }
   }
 
@@ -294,6 +293,11 @@ object Menus {
     Buttons.createButton("Play", "menu-button", row1, () => backToMenu("rules", () => toPlaySettings()))
   }
 
+  def playagain(): Unit = {
+    DomHelper.removeElementByID("playfield")
+    createGame()
+  }
+
   def winloose(s: String): Unit = {
     var playfieldElement = document.getElementById("playfield")
 
@@ -304,7 +308,7 @@ object Menus {
     val row2 = DomHelper.appendElement(playfieldElement, "div", "menu", "menu")
 
     Buttons.createButton("Back to Main Menu", "menu-button", row2, () => backToMenu("playfield", () => createMainMenu()))
-    Buttons.createButton("Play Again", "menu-button", row2, () => backToMenu("playfield", () => createSettingsMenu(true)))
+    Buttons.createButton("Play Again", "menu-button", row2, () => playagain())
   }
 
   def looseMenu(): Unit = {
