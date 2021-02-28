@@ -51,6 +51,8 @@ object Menus {
   }
 
   def createGame(): Unit = {
+    Buttons.last_x = -1
+    Buttons.last_y = -1
     gameContext.puzzle = getRandomPuzzle(gameContext.size)
     gameContext.solution = Solver.solve(gameContext.puzzle)
     if (gameContext.mode == GameMode.FiveLives) addHearts()
