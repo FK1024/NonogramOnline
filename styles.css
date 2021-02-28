@@ -254,12 +254,13 @@ th {
 
 .column-segments-input {
     width: 30px;
-    min-height: 30px;
+    min-height: 26px;
     padding: 2px 0px;
     color: black;
     background-color: white;
     line-height: 1.4;
     display: inline-block;
+    vertical-align: center;
 }
 
 .row-segments-input {
