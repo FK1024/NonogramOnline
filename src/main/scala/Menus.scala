@@ -226,7 +226,7 @@ object Menus {
           // parse mode
           gameContext.mode = modeDDBtn.textContent match {
             case "5 Lives Mode" => GameMode.FiveLives
-            case "Hardcore Mode" => GameMode.Hardcore
+            case "Hardcore Mode" => GameMode.Default
             case _ => throw new Exception(s"Game mode '${modeDDBtn.textContent}' is not valid'")
           }
           // update captions and remove dropdowns
@@ -415,10 +415,13 @@ object Menus {
     }
     thirdCellDiv.appendChild(rowSegsTable)
 
-    val backBtn = Buttons.createButton("Back", "menu-button", puzzleInputDiv, () => backToMainMenu(() => createMainMenu()))
+
+    DomHelper.appendElement(puzzleInputDiv, "div", "spacer50", "spacer")
+    val row1 = DomHelper.appendElement(puzzleInputDiv, "div", "menu", "menu")
+    val backBtn = Buttons.createButton("Back", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
     backBtn.id = "myBackButton"
 
-    val solveBtn = Buttons.createButton("Solve", "menu-button", puzzleInputDiv, () => {
+    val solveBtn = Buttons.createButton("Solve", "menu-button", row1, () => {
       val rowSegments = new ListBuffer[List[Int]]()
       val colSegments = new ListBuffer[List[Int]]()
       for (i <- 0 until gameContext.size) {
