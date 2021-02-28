@@ -225,7 +225,7 @@ object Menus {
           // parse mode
           gameContext.mode = modeDDBtn.textContent match {
             case "5 Lives Mode" => GameMode.FiveLives
-            case "Hardcore Mode" => GameMode.Hardcore
+            case "Hardcore Mode" => GameMode.Default
             case _ => throw new Exception(s"Game mode '${modeDDBtn.textContent}' is not valid'")
           }
           // update captions and remove dropdowns

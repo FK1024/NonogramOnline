@@ -60,7 +60,11 @@ object Buttons {
       } else {
         replaceInGameBoard(-3, 1, "table-button-pressed1")
         replaceInGameBoard(-2, 1, "table-button-pressed1")
-        replaceInGameBoard(-1, 1, "table-button-pressed1")
+        if(x == x1 && y ==y1) {
+          replaceInGameBoard(-1, 0, "table-button")
+        } else {
+          replaceInGameBoard(-1, 1, "table-button-pressed1")
+        }
         if(gameContext.mode == GameMode.Hardcore || gameContext.mode == GameMode.FiveLives) checkSolution(false)
       }
     } else if(mode == "left") {
@@ -70,8 +74,12 @@ object Buttons {
         replaceInGameBoard(-1,1,"table-button-pressed1")
         drawDrag(x,y,x1,y1,"table-button-pressed2")
       } else {
+        if(x == x1 && y ==y1) {
+          replaceInGameBoard(-2, 0, "table-button")
+        } else {
+          replaceInGameBoard(-2, 2, "table-button-pressed2")
+        }
         replaceInGameBoard(-3, 2, "table-button-pressed2")
-        replaceInGameBoard(-2, 2, "table-button-pressed2")
         replaceInGameBoard(-1, 2, "table-button-pressed2")
         if(gameContext.mode == GameMode.Hardcore || gameContext.mode == GameMode.FiveLives) checkSolution(false)
       }
@@ -125,6 +133,7 @@ object Buttons {
     if(completecheck) {
       if(!gameContext.gameOver) Menus.winMenu()
       gameContext.gameOver = true
+      return
     }
 
     if(checkall) {
