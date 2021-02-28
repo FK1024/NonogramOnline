@@ -143,7 +143,7 @@ object Buttons {
           }
           if(!gameContext.gameOver) {
             for (l <- gameContext.lives - check._3 until gameContext.lives) {
-              document.getElementById("heart" + (gameContext.lives - 1)).setAttribute("class", "brokenheart")
+              if (gameContext.lives-1 >= 0 ) document.getElementById("heart" + (gameContext.lives - 1)).setAttribute("class", "brokenheart")
               gameContext.lives -= 1
             }
           }
