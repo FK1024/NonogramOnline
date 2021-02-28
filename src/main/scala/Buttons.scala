@@ -142,7 +142,7 @@ object Buttons {
       val check = checkPosition(gameboard)
       if (!check._1) {
         if (gameContext.mode == GameMode.FiveLives) {
-          if (check._3 > 0) {
+          if (check._3 > 0 && !gameContext.gameOver) {
             for(y <- check._2.indices) {
               for(x <- check._2.indices) {
                 if (check._2(y)(x) == 1) {
