@@ -121,7 +121,7 @@ object Buttons {
   }
 
   def checkSolution(checkall: Boolean): Unit = {
-    val completecheck = submitSolution(gameboard)
+    var completecheck = submitSolution(gameboard)
     if(completecheck) {
       if(!gameContext.gameOver) Menus.winMenu()
       gameContext.gameOver = true
@@ -133,12 +133,19 @@ object Buttons {
       val check = checkPosition(gameboard)
       if (!check._1) {
         if (gameContext.mode == GameMode.FiveLives) {
-          for(y <- check._2.indices) {
-            for(x <- check._2.indices) {
-              if (check._2(y)(x) == 1) {
-                gameboard(y+1)(x+1) = 2
-                document.getElementById((x+1)+"|"+(y+1)).setAttribute("class", "table-button-pressed2")
+          if (check._3 > 0) {
+            for(y <- check._2.indices) {
+              for(x <- check._2.indices) {
+                if (check._2(y)(x) == 1) {
+                  gameboard(y+1)(x+1) = 2
+                  document.getElementById((x+1)+"|"+(y+1)).setAttribute("class", "table-button-pressed2")
+                }
               }
+            }
+            completecheck = submitSolution(gameboard)
+            if(completecheck) {
+              if(!gameContext.gameOver) Menus.winMenu()
+              gameContext.gameOver = true
             }
           }
           if(!gameContext.gameOver) {
