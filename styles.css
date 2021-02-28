@@ -3,7 +3,7 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 30px;
-  background-color: white;
+  background-color: #adadad;
 }
 
 .header{
@@ -34,6 +34,7 @@ body {
     align-content: center;
     grid-auto-flow: column;
     gap: 5px;
+    margin-bottom: 20px;
 }
 
 .h1 {
@@ -114,11 +115,13 @@ body {
     text-align: center;
     min-width: 150px;
     border: none;
+    border-radius: 12px;
 }
 
 .dropdown-caption {
   font-family: "Open Sans", sans-serif;
   font-size: 18px;
+  margin-bottom: 20px;
 }
 
 .dropdown {
@@ -175,19 +178,36 @@ body {
 }
 
 .table-button-pressed1 {
-  background-color: #555555;
+  background-color: #444444;
   height: 30px;
   width: 30px;
+  border: none;
+}
+
+.table-button-pressed1:focus {
+    outline: none;
 }
 
 .table-button-pressed2 {
-  background-color: #d6d6d6;
+  background-color: white;
+  height: 30px;
+  width: 30px;
+  border: none;
+}
+
+.table-button-pressed2:focus {
+    outline: none;
+}
+
+.table-button:hover {
+  background-color: #444444;
   height: 30px;
   width: 30px;
 }
 
-.table-button:hover, .table-button-pressed1:hover, .table-button-pressed2:hover {
-  background-color: #222222;
+.table-button-pressed1:hover, .table-button-pressed2:hover {
+  /*background-color: #222222;*/
+  opacity: 0.4;
   height: 30px;
   width: 30px;
 }
@@ -211,16 +231,16 @@ th {
 }
 
 .th1 {
-  border: 1px solid black;
+  border: 1px solid #0966c3;
 }
 
 .th2 {
-  border: 1px solid black;
+  border: 1px solid #0966c3;
   border-right: 5px solid #0966c3;
 }
 
 .th3 {
-  border: 1px solid black;
+  border: 1px solid #0966c3;
   border-bottom: 5px solid #0966c3;
 }
 
@@ -244,12 +264,12 @@ th {
 
 .column-segments {
     vertical-align: bottom;
-    border: 1px solid black;
+    border: 1px solid #0966c3;
 }
 
 .row-segments {
     text-align: right;
-    border: 1px solid black;
+    border: 1px solid #0966c3;
 }
 
 .column-segments-input {
