@@ -1,3 +1,5 @@
+package puzzles.size_5x5
+
 object Heart {
   val puzzle = """
 r:

@@ -1,3 +1,5 @@
+package puzzles.size_15x15
+
 object OMF {
   val puzzle =
     """

@@ -1,3 +1,5 @@
+package puzzles.size_10x10
+
 object MrKrabs {
   val puzzle = """
 r:

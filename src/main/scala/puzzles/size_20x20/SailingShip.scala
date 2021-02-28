@@ -1,3 +1,5 @@
+package puzzles.size_20x20
+
 object SailingShip {
   val puzzle =
     """

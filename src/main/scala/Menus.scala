@@ -3,6 +3,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 object Menus {
   var gameContext = new GameContext()
@@ -81,15 +82,16 @@ object Menus {
     Buttons.createButton("Check", "menu-button", row1, () => Buttons.checkSolution(true))
   }
 
-  // ToDo: load random level instead
-  private def getRandomPuzzle(size: Int) = {
-    size match {
-      case 5 => Parser.parseDefinition(Heart.puzzle)
-      case 10 => Parser.parseDefinition(MrKrabs.puzzle)
-      case 15 => Parser.parseDefinition(House.puzzle)
-      case 20 => Parser.parseDefinition(SailingShip.puzzle)
-      case 25 => throw new NotImplementedError()
+  private def getRandomPuzzle(size: Int): Puzzle = {
+    val puzzleDefinition = size match {
+      case 5 => PuzzleList.size5(Random.nextInt(PuzzleList.size5.length))
+      case 10 => PuzzleList.size10(Random.nextInt(PuzzleList.size10.length))
+      case 15 => PuzzleList.size15(Random.nextInt(PuzzleList.size15.length))
+      case 20 => PuzzleList.size20(Random.nextInt(PuzzleList.size20.length))
+      case _ => throw new Exception(s"there exist no puzzles for size $size")
     }
+
+    return Parser.parseDefinition(puzzleDefinition)
   }
 
   private def addHearts(): Unit = {
@@ -192,7 +194,7 @@ object Menus {
     sizeContentDiv.setAttribute("class", "dropdown-content")
     sizeDDDiv.appendChild(sizeContentDiv)
 
-    for (s <- 5 to 25 by 5) {
+    for (s <- 5 to 20 by 5) {
       val sizeBtn = document.createElement("button")
       sizeBtn.setAttribute("class", "dropdown-element-button")
       sizeBtn.textContent = s"$s x $s"
@@ -218,7 +220,6 @@ object Menus {
           case "10 x 10" => 10
           case "15 x 15" => 15
           case "20 x 20" => 20
-          case "25 x 25" => 25
           case _ => throw new Exception(s"Game field size '${sizeDDBtn.textContent}' is not valid")
         }
         if (addGameModeOptions) {
