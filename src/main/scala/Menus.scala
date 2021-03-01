@@ -81,7 +81,8 @@ object Menus {
 
     val row1 = DomHelper.appendElement(playFieldElement, "div", "menu", "menu")
     Buttons.createButton("Back", "menu-button", row1, () => backToMenu("playfield", () => createSettingsMenu(true)))
-    Buttons.createButton("Check", "menu-button", row1, () => Buttons.checkSolution(true))
+    if (gameContext.mode != GameMode.FiveLives) Buttons.createButton("Check", "menu-button", row1, () => Buttons.checkSolution(true))
+    else Buttons.createButton("Back to Main Menu", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
   }
 
   private def getRandomPuzzle(size: Int): Puzzle = {
@@ -419,7 +420,8 @@ object Menus {
 
     DomHelper.appendElement(puzzleInputDiv, "div", "spacer50", "spacer")
     val row1 = DomHelper.appendElement(puzzleInputDiv, "div", "menu", "menu")
-    val backBtn = Buttons.createButton("Back", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
+    val backBtn = Buttons.createButton("Back", "menu-button", row1, () => backToMenu("myPuzzleInputGUI", () => toSolverSettings()))
+    val backMainBtn = Buttons.createButton("Back to Main Menu", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
     backBtn.id = "myBackButton"
 
     val solveBtn = Buttons.createButton("Solve", "menu-button", row1, () => {
