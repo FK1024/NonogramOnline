@@ -1,6 +1,7 @@
 import Enums.NodeType
 import Enums.NodeType.NodeType
 import org.scalajs.dom
+import org.scalajs.dom.raw.Element
 import org.scalajs.dom.{Node, document}
 
 object DomHelper {
@@ -25,5 +26,21 @@ object DomHelper {
     if (text != "") newNode.textContent = text
     targetNode.appendChild(newNode)
     return newNode
+  }
+
+  def createButton(targetNode: Node, classname: String, text: String, eventFunc: () => Unit = null, id: String = ""): Element = {
+    val button = document.createElement("button")
+    button.textContent = text
+    button.setAttribute("class",classname)
+
+    if (eventFunc != null) {
+      button.addEventListener("click", {_: dom.MouseEvent =>
+        eventFunc()
+      })
+    }
+
+    if (id != "") button.id = id
+    targetNode.appendChild(button)
+    return button
   }
 }

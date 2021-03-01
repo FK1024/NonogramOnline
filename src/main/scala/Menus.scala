@@ -45,9 +45,9 @@ object Menus {
   def createMainMenu(): Unit = {
     val mainMenuElement = DomHelper.appendElement(NodeType.Div, document.body, "menu", "main-menu")
 
-    Buttons.createButton("Play Nonogram","menu-button", mainMenuElement, () => toPlaySettings())
-    Buttons.createButton("Solver","menu-button", mainMenuElement, () => toSolverSettings())
-    Buttons.createButton("Rules","menu-button", mainMenuElement, () => createRulesMenu())
+    DomHelper.createButton(mainMenuElement, "menu-button", "Play Nonogram", () => toPlaySettings())
+    DomHelper.createButton(mainMenuElement, "menu-button", "Solver", () => toSolverSettings())
+    DomHelper.createButton(mainMenuElement, "menu-button", "Rules", () => createRulesMenu())
   }
 
   def createGame(playagain: Boolean): Unit = {
@@ -80,9 +80,9 @@ object Menus {
     playFieldElement.appendChild(spacer)
 
     val row1 = DomHelper.appendElement(NodeType.Div, playFieldElement, "menu", "menu")
-    Buttons.createButton("Back", "menu-button", row1, () => backToMenu("playfield", () => createSettingsMenu(true)))
-    if (gameContext.mode != GameMode.FiveLives) Buttons.createButton("Check", "menu-button", row1, () => Buttons.checkSolution(true))
-    else Buttons.createButton("Back to Main Menu", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
+    DomHelper.createButton(row1, "menu-button", "Back", () => backToMenu("playfield", () => createSettingsMenu(true)))
+    if (gameContext.mode != GameMode.FiveLives) DomHelper.createButton(row1, "menu-button", "Check", () => Buttons.checkSolution(true))
+    else DomHelper.createButton(row1, "menu-button", "Back to Main Menu", () => backToMainMenu(() => createMainMenu()))
   }
 
   private def getRandomPuzzle(size: Int): Puzzle = {
@@ -162,7 +162,7 @@ object Menus {
     val sizeSelectionDiv = DomHelper.appendElement(NodeType.Div, selectionDiv)
     val sizeCaptionDiv = DomHelper.appendElement(NodeType.Div, sizeSelectionDiv, "dropdown-caption", "Game Field Size:", "Game Field Size:")
     val sizeDDDiv = DomHelper.appendElement(NodeType.Div, sizeSelectionDiv, "dropdown", "mySizeDropdown")
-    val sizeDDBtn = Buttons.createButton("Select Size ...", "dropdown-button", sizeDDDiv)
+    val sizeDDBtn = DomHelper.createButton(sizeDDDiv, "dropdown-button", "Select Size ...")
     val sizeContentDiv = DomHelper.appendElement(NodeType.Div, sizeDDDiv, "dropdown-content")
 
     for (s <- 5 to 20 by 5) {
@@ -176,7 +176,7 @@ object Menus {
       sizeContentDiv.appendChild(sizeBtn)
     }
 
-    Buttons.createButton("Back", "menu-button", buttonDiv, () => backToMainMenu(() => createMainMenu()), "myBackButton")
+    DomHelper.createButton(buttonDiv, "menu-button", "Back", () => backToMainMenu(() => createMainMenu()), "myBackButton")
 
     val submitBtn = document.createElement("button")
     submitBtn.id = "mySubmitBtn"
@@ -232,8 +232,8 @@ object Menus {
 
     DomHelper.appendElement(NodeType.Div, rulesElement, "spacer50", "spacer50")
     val row1 = DomHelper.appendElement(NodeType.Div, rulesElement, "menu", "menu")
-    Buttons.createButton("Back", "menu-button", row1, () => backToMenu("rules", () => createMainMenu()))
-    Buttons.createButton("Play", "menu-button", row1, () => backToMenu("rules", () => toPlaySettings()))
+    DomHelper.createButton(row1, "menu-button", "Back", () => backToMenu("rules", () => createMainMenu()))
+    DomHelper.createButton(row1, "menu-button", "Play", () => backToMenu("rules", () => toPlaySettings()))
   }
 
   def playAgain(): Unit = {
@@ -250,8 +250,8 @@ object Menus {
     DomHelper.removeElementByID("menu")
     val row2 = DomHelper.appendElement(NodeType.Div, playfieldElement, "menu", "menu")
 
-    Buttons.createButton("Back to Main Menu", "menu-button", row2, () => backToMenu("playfield", () => createMainMenu()))
-    Buttons.createButton("Play Again", "menu-button", row2, () => playAgain())
+    DomHelper.createButton(row2, "menu-button", "Back to Main Menu", () => backToMenu("playfield", () => createMainMenu()))
+    DomHelper.createButton(row2, "menu-button", "Play Again", () => playAgain())
   }
 
   def looseMenu(): Unit = {
@@ -316,18 +316,18 @@ object Menus {
 
     DomHelper.appendElement(NodeType.Div, puzzleInputDiv, "spacer50", "spacer")
     val row1 = DomHelper.appendElement(NodeType.Div, puzzleInputDiv, "menu", "menu")
-    Buttons.createButton("Back", "menu-button", row1, () => backToMenu("myPuzzleInputGUI", () => toSolverSettings()), "myBackButton")
-    Buttons.createButton("Back to Main Menu", "menu-button", row1, () => backToMainMenu(() => createMainMenu()))
+    DomHelper.createButton(row1, "menu-button", "Back", () => backToMenu("myPuzzleInputGUI", () => toSolverSettings()), "myBackButton")
+    DomHelper.createButton(row1, "menu-button", "Back to Main Menu", () => backToMainMenu(() => createMainMenu()))
 
-    Buttons.createButton("Solve", "menu-button", row1, () => {
-      val rowSegments = new ListBuffer[List[Int]]()
-      val colSegments = new ListBuffer[List[Int]]()
-      for (i <- 0 until gameContext.size) {
-        rowSegments.append(document.getElementById(s"row_$i").textContent.split(" ").toList.map(_.toInt))
-        colSegments.append(document.getElementById(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
-      }
-      runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
-    }, "mySolveButton")
+    DomHelper.createButton(row1, "menu-button", "Solve", () => {
+          val rowSegments = new ListBuffer[List[Int]]()
+          val colSegments = new ListBuffer[List[Int]]()
+          for (i <- 0 until gameContext.size) {
+            rowSegments.append(document.getElementById(s"row_$i").textContent.split(" ").toList.map(_.toInt))
+            colSegments.append(document.getElementById(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
+          }
+          runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
+        }, "mySolveButton")
   }
 
   def runSolver(puzzle: Puzzle): Unit = {

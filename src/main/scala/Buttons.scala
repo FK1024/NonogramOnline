@@ -13,22 +13,6 @@ object Buttons {
   var last_x = -1
   var last_y = -1
 
-  def createButton(text: String, classname: String, targetNode: dom.Node, eventFunc: () => Unit = null, id: String = ""): Element = {
-    val button = document.createElement("button")
-    button.textContent = text
-    button.setAttribute("class",classname)
-
-    if (eventFunc != null) {
-      button.addEventListener("click", {_: dom.MouseEvent =>
-        eventFunc()
-      })
-    }
-
-    if (id != "") button.id = id
-    targetNode.appendChild(button)
-    return button
-  }
-
   def buttonHover(x: Int, y: Int, style: String): Unit = {
     val size_x = gameContext.puzzle.rowSegments(y - 1).length
     val size_y = gameContext.puzzle.colSegments(x - 1).length
