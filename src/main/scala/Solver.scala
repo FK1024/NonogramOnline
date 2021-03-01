@@ -15,10 +15,10 @@ object Solver {
     // check for overfilled rows/cols
     for (i <- 0 until fieldSize) {
       if (getLaxity(puzzle.rowSegments(i)) < 0) {
-        throw new Exception(s"the segments of row ${i + 1} are too long to fit in the game field")
+        throw new Exception(s"The segments of row ${i + 1} are too long to fit in the game field")
       }
       if (getLaxity(puzzle.colSegments(i)) < 0) {
-        throw new Exception(s"the segments of column ${i + 1} are too long to fit in the game field")
+        throw new Exception(s"The segments of column ${i + 1} are too long to fit in the game field")
       }
     }
 
@@ -98,7 +98,7 @@ object Solver {
     }
 
     if (!solvedCell) {
-      throw new Exception("The gameField was not solvable")
+      throw new Exception("The puzzle was not solvable")
     } else {
       gameField
     }

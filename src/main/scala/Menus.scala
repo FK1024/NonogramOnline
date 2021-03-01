@@ -1,6 +1,6 @@
 import Enums.{GameMode, NodeType, State}
 import org.scalajs.dom
-import org.scalajs.dom.document
+import org.scalajs.dom.{Event, document}
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -294,6 +294,8 @@ object Menus {
       }
     }
 
+    val spacer = DomHelper.appendElement(NodeType.Div, puzzleInputDiv, "spacer50", "spacer")
+
     // column segments input table
     val colSegsTable = DomHelper.appendElement(NodeType.Table, secondCellDiv, "styled-table")
     val colSegsTableRow = DomHelper.appendElement(NodeType.Tr, colSegsTable)
@@ -301,6 +303,12 @@ object Menus {
       val colSegsTableCell = DomHelper.appendElement(NodeType.Th, colSegsTableRow, "column-segments")
       val colSegsTableCellDiv = DomHelper.appendElement(NodeType.Div, colSegsTableCell, "column-segments-input", s"col_$c")
       colSegsTableCellDiv.setAttribute("contenteditable", "true")
+      colSegsTableCellDiv.addEventListener("keydown", {e: dom.KeyboardEvent =>
+        if (e.keyCode == 32) e.preventDefault()
+      })
+      colSegsTableCellDiv.addEventListener("input", {_: Event =>
+        spacer.textContent = ""
+      })
     }
 
     // row segments input table
@@ -313,23 +321,41 @@ object Menus {
       rowSegsTableCellDiv.addEventListener("keydown", {e: dom.KeyboardEvent =>
         if (e.keyCode == 13) e.preventDefault()
       })
+      rowSegsTableCellDiv.addEventListener("input", {_: Event =>
+        spacer.textContent = ""
+      })
     }
 
-
-    DomHelper.appendElement(NodeType.Div, puzzleInputDiv, "spacer50", "spacer")
     val row1 = DomHelper.appendElement(NodeType.Div, puzzleInputDiv, "menu", "menu")
     DomHelper.createButton(row1, "menu-button", "Back", () => backToMenu("myPuzzleInputGUI", () => toSolverSettings()), "myBackButton")
     DomHelper.createButton(row1, "menu-button", "Back to Main Menu", () => backToMainMenu(() => createMainMenu()))
 
     DomHelper.createButton(row1, "menu-button", "Solve", () => {
-          val rowSegments = new ListBuffer[List[Int]]()
-          val colSegments = new ListBuffer[List[Int]]()
-          for (i <- 0 until gameContext.size) {
-            rowSegments.append(document.getElementById(s"row_$i").textContent.split(" ").toList.map(_.toInt))
-            colSegments.append(document.getElementById(s"col_$i").innerHTML.split("<br>").toList.map(_.toInt))
-          }
-          runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
-        }, "mySolveButton")
+      val rowSegments = new ListBuffer[List[Int]]()
+      val colSegments = new ListBuffer[List[Int]]()
+      for (i <- 0 until gameContext.size) {
+        val rowInput = document.getElementById(s"row_$i")
+        if (rowInput.textContent == "") {
+          rowSegments.append(List(0))
+          rowInput.textContent = "0"
+        } else {
+          rowSegments.append(rowInput.textContent.split(" ").toList.map(_.toInt))
+        }
+
+        val colInput = document.getElementById(s"col_$i")
+        if (colInput.textContent == "") {
+          colSegments.append(List(0))
+          colInput.textContent = "0"
+        } else {
+          colSegments.append(colInput.innerHTML.split("<br>").toList.map(_.toInt))
+        }
+      }
+      try {
+        runSolver(new Puzzle(rowSegments.toList, colSegments.toList))
+      } catch {
+        case e: Exception => spacer.textContent = e.getMessage
+      }
+    }, "mySolveButton")
   }
 
   def runSolver(puzzle: Puzzle): Unit = {
@@ -339,8 +365,8 @@ object Menus {
       for (c <- puzzle.colSegments.indices) {
         val cellDiv = document.getElementById(s"$r|$c")
         solution(r)(c) match {
-          case State.Blank => cellDiv.setAttribute("class", "table-button-pressed2")
-          case State.Set => cellDiv.setAttribute("class", "table-button-pressed1")
+          case State.Blank => cellDiv.setAttribute("class", "table-cell-white")
+          case State.Set => cellDiv.setAttribute("class", "table-cell-black")
         }
       }
     }
