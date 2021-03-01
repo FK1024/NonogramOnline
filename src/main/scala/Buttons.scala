@@ -13,7 +13,7 @@ object Buttons {
   var last_x = -1
   var last_y = -1
 
-  def createButton(text: String, classname: String, targetNode: dom.Node, eventFunc: () => Unit = null): Element = {
+  def createButton(text: String, classname: String, targetNode: dom.Node, eventFunc: () => Unit = null, id: String = ""): Element = {
     val button = document.createElement("button")
     button.textContent = text
     button.setAttribute("class",classname)
@@ -24,6 +24,7 @@ object Buttons {
       })
     }
 
+    if (id != "") button.id = id
     targetNode.appendChild(button)
     return button
   }

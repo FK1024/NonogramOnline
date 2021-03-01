@@ -14,4 +14,9 @@ object Enums {
     type GameMode = Value
     val FiveLives, Hardcore, Default = Value
   }
+
+  object NodeType extends Enumeration {
+    type NodeType = Value
+    val Div, Table, Tr, Th, Br = Value
+  }
 }
