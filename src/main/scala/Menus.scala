@@ -50,10 +50,10 @@ object Menus {
     Buttons.createButton("Rules","menu-button", mainMenuElement, () => createRulesMenu())
   }
 
-  def createGame(): Unit = {
+  def createGame(playagain: Boolean): Unit = {
     Buttons.last_x = -1
     Buttons.last_y = -1
-    gameContext.puzzle = getRandomPuzzle(gameContext.size)
+    if (!playagain) gameContext.puzzle = getRandomPuzzle(gameContext.size)
     gameContext.solution = Solver.solve(gameContext.puzzle)
     if (gameContext.mode == GameMode.FiveLives) addHearts()
     gameContext.gameOver = false
@@ -238,7 +238,7 @@ object Menus {
           sizeCaptionDiv.textContent += s" ${sizeDDBtn.textContent}"
           DomHelper.removeElementByID(sizeDDDiv.id)
           DomHelper.removeElementByID(buttonDiv.id)
-          createGame()
+          createGame(false)
         } else {
           DomHelper.removeElementByID(settingsMenuDiv.id)
           createPuzzleInput()
@@ -298,7 +298,7 @@ object Menus {
 
   def playagain(): Unit = {
     DomHelper.removeElementByID("playfield")
-    createGame()
+    createGame(true)
   }
 
   def winloose(s: String): Unit = {
