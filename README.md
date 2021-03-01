@@ -1,6 +1,8 @@
 # NonogramOnline
 
 ### How to Play
+- Open the **sbt** shell
+- Run the **run** or **~fastLinkJS** command
 - Just open the **NonogrammOnline.html** file in your Browser
 
 ### Features
