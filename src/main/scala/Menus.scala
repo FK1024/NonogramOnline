@@ -81,8 +81,9 @@ object Menus {
 
     val row1 = DomHelper.appendElement(NodeType.Div, playFieldElement, "menu", "menu")
     DomHelper.createButton(row1, "menu-button", "Back", () => backToMenu("playfield", () => createSettingsMenu(true)))
+    DomHelper.createButton(row1, "menu-button", "Back to Main Menu", () => backToMainMenu(() => createMainMenu()))
     if (gameContext.mode != GameMode.FiveLives) DomHelper.createButton(row1, "menu-button", "Check", () => Buttons.checkSolution(true))
-    else DomHelper.createButton(row1, "menu-button", "Back to Main Menu", () => backToMainMenu(() => createMainMenu()))
+    else DomHelper.createButton(row1, "menu-button", "Play Again", () => playAgain())
   }
 
   private def getRandomPuzzle(size: Int): Puzzle = {
@@ -250,6 +251,7 @@ object Menus {
     DomHelper.removeElementByID("menu")
     val row2 = DomHelper.appendElement(NodeType.Div, playfieldElement, "menu", "menu")
 
+    DomHelper.createButton(row2, "menu-button", "Back", () => backToMenu("playfield", () => toPlaySettings()))
     DomHelper.createButton(row2, "menu-button", "Back to Main Menu", () => backToMenu("playfield", () => createMainMenu()))
     DomHelper.createButton(row2, "menu-button", "Play Again", () => playAgain())
   }
