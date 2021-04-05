@@ -25,44 +25,38 @@ object Solver {
     var openRows = new ListBuffer[Int]
     var openCols = new ListBuffer[Int]
     var openSet = new ListBuffer[Int]
+
+    var validRowConfigs = Array.ofDim[List[Array[Int]]](fieldSize)
+    var validColConfigs = Array.ofDim[List[Array[Int]]](fieldSize)
+    var validConfigs = Array.ofDim[List[Array[Int]]](fieldSize)
+    for (i <- 0 until fieldSize) {
+      validRowConfigs(i) = getConfigurations(puzzle.rowSegments(i))
+      validColConfigs(i) = getConfigurations(puzzle.colSegments(i))
+    }
+
     var solvedCell = true
     val solvedItems = new ListBuffer[Int]
-
-    // handle rows/cols containing just a 0 first
-    for (i <- 0 until fieldSize) {
-      if (puzzle.rowSegments(i).length == 1 && puzzle.rowSegments(i).head == 0) {
-        for (j <- 0 until fieldSize) {
-          gameField(i)(j) = State.Blank
-        }
-      } else {
-        openRows.append(i)
-      }
-
-      if (puzzle.colSegments(i).length == 1 && puzzle.colSegments(i).head == 0) {
-        for (j <- 0 until fieldSize) {
-          gameField(j)(i) = State.Blank
-        }
-      } else {
-        openCols.append(i)
-      }
-    }
 
     while (openRows.nonEmpty && openCols.nonEmpty && solvedCell) {
       solvedCell = false
       for (dim <- Dimension.values) {
         solvedItems.clear()
 
-        openSet = dim match {
-          case Dimension.Row => openRows
-          case Dimension.Column => openCols
+        dim match {
+          case Dimension.Row =>
+            openSet = openRows
+            validConfigs = validRowConfigs
+          case Dimension.Column =>
+            openSet = openCols
+            validConfigs = validColConfigs
         }
 
         for (index <- openSet) {
-          val validConfigs = getValidConfigurations(puzzle, dim, index)
-          if (validConfigs.isEmpty) {
+          validConfigs(index) = removeInvalidConfigs(dim, index, validConfigs(index))
+          if (validConfigs(index).isEmpty) {
             throw new Exception("The puzzle was not solvable")
           }
-          val transposed = validConfigs.transpose // TransposeConfig(validConfigs)
+          val transposed = validConfigs(index).transpose
           for (i <- transposed.indices) {
             if (dim == Dimension.Row && gameField(index)(i) == State.Unknown || dim == Dimension.Column && gameField(i)(index) == State.Unknown) {
               val cellStates = transposed(i)
@@ -124,29 +118,17 @@ object Solver {
     true
   }
 
-  private def getValidConfigurations(puzzle: Puzzle, dimension: Dimension, index: Int): List[Array[Int]] = {
-    val validConfigs = new ListBuffer[Array[Int]]
-
-    val segments = dimension match {
-      case Dimension.Row => puzzle.rowSegments(index)
-      case Dimension.Column => puzzle.colSegments(index)
+  private def getConfigurations(segments: List[Int]): List[Array[Int]] = {
+    // a single 0 indicates a blank row/col and needs special treatment
+    if (segments.length == 1 && segments.head == 0)
+    {
+      return List(Array.fill(fieldSize)(State.Blank))
     }
 
-    val configurations = getConfigurations(segments, getLaxity(segments))
-
-    for (configuration <- configurations) {
-      val fieldSetup = toFieldSetup(segments, configuration)
-      if (isValid(fieldSetup, dimension, index)) {
-        validConfigs.append(fieldSetup)
-      }
-    }
-
-    validConfigs.toList
-  }
-
-  private def getConfigurations(segments: List[Int], laxity: Int): List[List[Int]] = {
     // result list
-    val configs = new ListBuffer[List[Int]]
+    val configs = new ListBuffer[Array[Int]]
+
+    val laxity = getLaxity(segments)
 
     val leftmostPositions = new ListBuffer[Int]
     var pos = 0
@@ -158,7 +140,8 @@ object Solver {
 
     // start with #segmentCount zeros
     val current = Array.fill[Int](segments.length)(0)
-    configs.append(current.zip(leftmostPositions).map(t => t._1 + t._2).toList)
+    val config = current.zip(leftmostPositions).map(t => t._1 + t._2).toList
+    configs.append(toFieldSetup(segments, config))
 
     while (current.head < laxity) {
       // find the last index having an increasable value
@@ -176,7 +159,8 @@ object Solver {
       }
 
       // add current to result list
-      configs.append(current.zip(leftmostPositions).map(t => t._1 + t._2).toList)
+      val config = current.zip(leftmostPositions).map(t => t._1 + t._2).toList
+      configs.append(toFieldSetup(segments, config))
     }
 
     configs.toList
@@ -206,6 +190,10 @@ object Solver {
     }
 
     setup
+  }
+
+  private def removeInvalidConfigs(dimension: Dimension, index: Int, configurations: List[Array[Int]]): List[Array[Int]] = {
+    configurations.filter(c => isValid(c, dimension, index))
   }
 
   private def isValid(fieldSetup: Array[Int], dimension: Dimension, index: Int): Boolean = {
